@@ -2,9 +2,10 @@
 
 function Instrument() {
   return (
-    <p>
-      I am an instrument
-    </p>
+    <mesh>
+      <boxGeometry />
+      <meshStandardMaterial />
+    </mesh>
   )
 }
 
