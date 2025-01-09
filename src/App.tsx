@@ -10,20 +10,17 @@ function Environment() {
       <directionalLight color='orange' position={[3, 0, 3]} />
       <mesh position={[3, 0, 3]} /* DEBUG */>
         <boxGeometry />
-      </mesh>{' '}
+      </mesh>
     </>
   );
 }
 
 function App() {
   return (
-    <div id='canvas-container'>
-      {/* Canvas sets up a Scene and Camera and renders the scene every frame */}
-      <Canvas>
-        <Environment />
-        <Instrument color='orange'></Instrument>
-      </Canvas>
-    </div>
+    <Canvas>
+      <Environment />
+      <Instrument color='orange'></Instrument>
+    </Canvas>
   );
 }
 

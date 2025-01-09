@@ -16,7 +16,7 @@ function Instrument(props: InstrumentProps) {
 
   return (
     <mesh ref={meshRef} onClick={(event) => setActive(!active)}>
-      <boxGeometry />
+      <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={active ? 'hotpink' : props.color} />
     </mesh>
   );
