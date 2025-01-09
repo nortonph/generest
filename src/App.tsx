@@ -1,15 +1,19 @@
 import './App.css';
+import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import Instrument from './components/Instrument';
+import Thing from './components/Thing.tsx';
 
 function App() {
 
+  // States
+  const [instruments, setInstruments] = useState([]);
+
   // JSX
   return (
-    <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
+    <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
       <Environment />
-      <Instrument color='orange' position={new Vector3(0, 0, 0)}></Instrument>
+      <Thing color='orange' position={new Vector3(0, 0, 0)}></Thing>
     </Canvas>
   );
 }

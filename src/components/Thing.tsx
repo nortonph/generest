@@ -4,12 +4,12 @@ import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls } from '@react-three/drei';
 
-interface InstrumentProps {
+interface ThingProps {
   color: string;
   position: Vector3;
 }
 
-function Instrument(props: InstrumentProps) {
+function Thing(props: ThingProps) {
   // This reference will give us direct access to the mesh
   // from r3f docs - "using with typescript" about null!:
   // "The exclamation mark is a non-null assertion that will let TS know that ref.current is defined when we access it in effects."
@@ -18,9 +18,8 @@ function Instrument(props: InstrumentProps) {
   // States
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
-  const [rotating, setRotating] = useState(false);
+  const [rotating, setRotating] = useState(true);
   const [expanded, setExpanded] = useState(false);
-  const [grabbed, setGrab] = useState(false);
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -59,13 +58,15 @@ function Instrument(props: InstrumentProps) {
     if (rotating) {
       meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
     }
-    if (grabbed) {
-    }
   });
+
+  function createNewThing() {
+    // todo: set this to active and create a new inactive ("menu item") Thing
+  }
 
   // JSX
   return (
-    <DragControls>
+    <DragControls onDragStart={createNewThing}>
       <animated.mesh
         ref={meshRef}
         position={props.position}
@@ -86,4 +87,4 @@ function Instrument(props: InstrumentProps) {
   );
 }
 
-export default Instrument;
+export default Thing;
