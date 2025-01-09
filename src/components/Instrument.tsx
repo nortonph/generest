@@ -38,14 +38,14 @@ function Instrument(props: InstrumentProps) {
   // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
     if (rotating) {
-      // meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
+      meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
     }
   });
 
   // JSX
   return (
     <animated.mesh
-      // ref={meshRef}
+      ref={meshRef}
       position={props.position}
       scale={springs.scale}
       onClick={handleClick}
