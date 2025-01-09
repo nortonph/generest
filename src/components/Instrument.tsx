@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
+import { DragControls } from '@react-three/drei';
 
 interface InstrumentProps {
   color: string;
@@ -19,6 +20,7 @@ function Instrument(props: InstrumentProps) {
   const [active, setActive] = useState(false);
   const [rotating, setRotating] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [grabbed, setGrab] = useState(false);
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -49,28 +51,38 @@ function Instrument(props: InstrumentProps) {
     setHover(hovered);
     api.start({
       color: hovered ? 'hotpink' : props.color,
-    });  }
+    });
+  }
 
   // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
     if (rotating) {
       meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
     }
+    if (grabbed) {
+    }
   });
 
   // JSX
   return (
-    <animated.mesh
-      ref={meshRef}
-      position={props.position}
-      scale={springs.scale}
-      onClick={handleClick}
-      onPointerOver={() => handleHover(true)}
-      onPointerOut={() => handleHover(false)}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <animated.meshStandardMaterial color={springs.color} />
-    </animated.mesh>
+    <DragControls>
+      <animated.mesh
+        ref={meshRef}
+        position={props.position}
+        scale={springs.scale}
+        // onClick={(event) => handleClick()}
+        onPointerOver={() => handleHover(true)}
+        onPointerOut={() => handleHover(false)}
+        onContextMenu={(event) => {
+          // right click
+          event.nativeEvent.preventDefault();
+          handleClick();
+        }}
+      >
+        <boxGeometry args={[1, 1, 1]} />
+        <animated.meshStandardMaterial color={springs.color} />
+      </animated.mesh>
+    </DragControls>
   );
 }
 
