@@ -1,14 +1,17 @@
 import './App.css';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
+import { Vector3 } from 'three';
 import Instrument from './components/Instrument';
 
 function Environment() {
   // component for lighting, etc.
+  const dirLightPos = new Vector3(5, 2, 5);
+
   return (
     <>
       <ambientLight intensity={1.0} />
-      <directionalLight color='orange' position={[3, 0, 3]} />
-      <mesh position={[3, 0, 3]} /* DEBUG */>
+      <directionalLight color='white' position={dirLightPos} />
+      <mesh position={dirLightPos} /* DEBUG */>
         <boxGeometry />
       </mesh>
     </>
@@ -17,7 +20,7 @@ function Environment() {
 
 function App() {
   return (
-    <Canvas>
+    <Canvas camera={{ position: [0, 0, 10] }}>
       <Environment />
       <Instrument color='orange'></Instrument>
     </Canvas>
