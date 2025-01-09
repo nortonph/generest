@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
+import { useSpring, a } from '@react-spring/three';
 
 interface InstrumentProps {
   color: string;
@@ -29,7 +30,7 @@ function Instrument(props: InstrumentProps) {
     <mesh
       ref={meshRef}
       position={props.position}
-      onClick={(event) => {
+      onClick={() => {
         setActive(!active);
         setRotating(!rotating);
       }}
