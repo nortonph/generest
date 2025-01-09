@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh } from 'three';
+import { Mesh, Vector3 } from 'three';
 
 interface InstrumentProps {
   color: string;
+  position: Vector3;
 }
 
 function Instrument(props: InstrumentProps) {
@@ -27,6 +28,7 @@ function Instrument(props: InstrumentProps) {
   return (
     <mesh
       ref={meshRef}
+      position={props.position}
       onClick={(event) => {
         setActive(!active);
         setRotating(!rotating);

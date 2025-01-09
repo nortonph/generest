@@ -10,6 +10,8 @@ function Environment() {
   return (
     <>
       <ambientLight intensity={1.0} />
+      {/* directionalLight: sun; casts shadows; infinitely far w/ parallel rays */}
+      {/* pointLight: light bulb */}
       <directionalLight color='white' position={dirLightPos} />
       <mesh position={dirLightPos} /* DEBUG */>
         <boxGeometry />
@@ -20,9 +22,9 @@ function Environment() {
 
 function App() {
   return (
-    <Canvas camera={{ position: [0, 0, 10] }}>
+    <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
       <Environment />
-      <Instrument color='orange'></Instrument>
+      <Instrument color='orange' position={new Vector3(0, 0, 0)}></Instrument>
     </Canvas>
   );
 }
