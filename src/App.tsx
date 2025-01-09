@@ -2,7 +2,6 @@ import './App.css';
 import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import Instrument from './components/Instrument';
-import MyComponent from './components/tmp';
 
 function App() {
 

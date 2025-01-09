@@ -23,9 +23,20 @@ function Instrument(props: InstrumentProps) {
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
     scale: 1,
-    config: { mass: 4, friction: 10, duration: 100 },
+    color: props.color,
+    config: (key) => {
+      switch (key) {
+        case 'scale':
+          return { duration: 100 };
+        case 'color':
+          return { duration: 200 };
+        default:
+          return {};
+      }
+    },
   }));
 
+  // Mouse Interface
   function handleClick() {
     setActive(!active);
     setRotating(!rotating);
@@ -34,6 +45,11 @@ function Instrument(props: InstrumentProps) {
       scale: expanded ? 1.3 : 1,
     });
   }
+  function handleHover(hovered: boolean) {
+    setHover(hovered);
+    api.start({
+      color: hovered ? 'hotpink' : props.color,
+    });  }
 
   // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
@@ -49,11 +65,11 @@ function Instrument(props: InstrumentProps) {
       position={props.position}
       scale={springs.scale}
       onClick={handleClick}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
+      onPointerOver={() => handleHover(true)}
+      onPointerOut={() => handleHover(false)}
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : props.color} />
+      <animated.meshStandardMaterial color={springs.color} />
     </animated.mesh>
   );
 }
