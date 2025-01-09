@@ -4,24 +4,33 @@ import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import Thing from './components/Thing.tsx';
 
-class Instrument {
+export class Module {
+  type: string;
   color: string;
   position: Vector3;
-  constructor(color: string, position: Vector3) {
-    this.color = color;
+  constructor(type: string, position: Vector3) {
+    this.type = type;
     this.position = position;
+    switch (type) {
+      case 'beatBox':
+        this.color = 'orange'; break;
+      case 'melodyBox':
+        this.color = 'royalblue'; break;
+      default:
+        this.color = 'white';
+    }
   }
 }
 
 function App() {
   // States
-  const [instruments, setInstruments] = useState<Instrument[]>([]);
+  const [modules, setModules] = useState<Module[]>([]);
 
   // "Menu items"
   function createThings() {
-    const beatBox = new Instrument('orange', new Vector3(-2, 0, 0));
-    const melodyBox = new Instrument('royalblue', new Vector3(2, 0, 0));
-    setInstruments([beatBox, melodyBox]);
+    const beatBox = new Module('beatBox', new Vector3(-2, 6, 0));
+    const melodyBox = new Module('melodyBox', new Vector3(2, 6, 0));
+    setModules([beatBox, melodyBox]);
   }
   useEffect(() => {
     createThings();
@@ -31,15 +40,24 @@ function App() {
   return (
     <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
       <Environment />
-        {
-          instruments.length ? instruments.map((instrument, idx) => {
-            return (<Thing color={instrument.color} position={instrument.position}></Thing>);
-          }) : <p>No instruments found.</p>
-        }
+      {modules.length ? (
+        modules.map((module, idx) => {
+          return (
+            <Thing
+              type={module.type}
+              color={module.color}
+              position={module.position}
+              modules={modules}
+              setModules={setModules}
+            ></Thing>
+          );
+        })
+      ) : (
+        <p>No instruments found.</p>
+      )}
     </Canvas>
   );
 }
-
 
 // Component for lighting, etc.
 function Environment() {
@@ -52,7 +70,7 @@ function Environment() {
       {/* directionalLight: sun; casts shadows; infinitely far w/ parallel rays */}
       {/* pointLight: light bulb */}
       <directionalLight color='white' position={dirLightPos} />
-      <mesh position={dirLightPos} /* DEBUG */>
+      <mesh position={dirLightPos} visible={false} /* DEBUG */>
         <boxGeometry />
       </mesh>
     </>

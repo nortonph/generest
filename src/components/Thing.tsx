@@ -1,12 +1,16 @@
-import { useRef, useState } from 'react';
+import { Dispatch, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls } from '@react-three/drei';
+import { Module } from '../App';
 
 interface ThingProps {
+  type: string;
   color: string;
   position: Vector3;
+  modules: Module[];  // state of App() containing all
+  setModules: Function;
 }
 
 function Thing(props: ThingProps) {
@@ -39,7 +43,6 @@ function Thing(props: ThingProps) {
 
   // Mouse Interface
   function handleClick() {
-    setActive(!active);
     setRotating(!rotating);
     setExpanded(!expanded);
     api.start({
@@ -60,13 +63,20 @@ function Thing(props: ThingProps) {
     }
   });
 
-  function createNewThing() {
-    // todo: set this to active and create a new inactive ("menu item") Thing
+  function cloneThing(type: string) {
+    if (!active) {
+      setActive(true);
+      props.setModules([...props.modules, new Module(props.type, meshRef.current.position)]);
+    }
   }
 
   // JSX
   return (
-    <DragControls onDragStart={createNewThing}>
+    <DragControls
+      onDragStart={() => {
+        cloneThing(props.type);
+      }}
+    >
       <animated.mesh
         ref={meshRef}
         position={props.position}
