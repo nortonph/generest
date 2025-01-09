@@ -1,5 +1,5 @@
 import './App.css';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import Instrument from './components/Instrument';
 
 function Environment() {
