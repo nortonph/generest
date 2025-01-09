@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
-import { useSpring, a } from '@react-spring/three';
+import { useSpring, animated } from '@react-spring/three';
 
 interface InstrumentProps {
   color: string;
@@ -14,30 +14,47 @@ function Instrument(props: InstrumentProps) {
   // "The exclamation mark is a non-null assertion that will let TS know that ref.current is defined when we access it in effects."
   const meshRef = useRef<Mesh>(null!);
 
-  // Set up state for the hovered and active state
+  // States
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
-  const [rotating, setRotating] = useState(true);
+  const [rotating, setRotating] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-  // Animations
+  // React Spring properties (Imperative API)
+  const [springs, api] = useSpring(() => ({
+    scale: 1,
+    config: { mass: 4, friction: 10, duration: 100 },
+  }));
+
+  function handleClick() {
+    setActive(!active);
+    setRotating(!rotating);
+    setExpanded(!expanded);
+    api.start({
+      scale: expanded ? 1.3 : 1,
+    });
+  }
+
+  // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
     if (rotating) {
-      meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
+      // meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
     }
   });
 
+  // JSX
   return (
-    <mesh
-      ref={meshRef}
+    <animated.mesh
+      // ref={meshRef}
       position={props.position}
-      onClick={() => {
-        setActive(!active);
-        setRotating(!rotating);
-      }}
+      scale={springs.scale}
+      onClick={handleClick}
+      onPointerOver={() => setHover(true)}
+      onPointerOut={() => setHover(false)}
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={active ? 'hotpink' : props.color} />
-    </mesh>
+      <meshStandardMaterial color={hovered ? 'hotpink' : props.color} />
+    </animated.mesh>
   );
 }
 
