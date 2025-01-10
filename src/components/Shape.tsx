@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3, ThreeEvent } from 'three'; // todo: ask where ThreeEvent comes from (how to properly import types?)
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
+import * as Tone from 'tone';
 import { Module } from '../App';
 import { playInstrument } from '../instrument';
 
@@ -10,6 +11,7 @@ interface ShapeProps {
   type: string;
   color: string;
   position: Vector3;
+  object: Tone.Synth | undefined; // todo: this is a placeholder
   modules: Module[]; // state of App() containing all
   setModules: Function; // todo: ask how to better define function (linting error: "Prefer explicitly defining any function parameters and return type")
 } // todo: move to type definition file
@@ -43,7 +45,17 @@ function Shape(props: ShapeProps) {
   }));
 
   // Mouse Interface
-  const handleClick = useCallback(() => {
+  const handleLeftClick = () => {
+    if (expanded.current) {
+      switch (props.type) {
+        case 'trigger':
+          console.log('trying to play sound on ' + props.type);
+          playInstrument(props.object);
+          break;
+      }
+    }
+  }
+  const handleRightClick = useCallback(() => {
 
     return (event: ThreeEvent<MouseEvent>) => {
       event.nativeEvent.preventDefault();
@@ -87,7 +99,7 @@ function Shape(props: ShapeProps) {
       setActive(true);
       props.setModules([
         ...props.modules,
-        new Module(props.type, meshRef.current.position),
+        new Module(props.type, meshRef.current.position, props.object),
       ]);
     }
   }
@@ -107,7 +119,8 @@ function Shape(props: ShapeProps) {
           scale={springs.scale}
           onPointerOver={handlePointerOver}
           onPointerOut={handlePointerOut}
-          onContextMenu={handleClick()} // right click
+          onClick={handleLeftClick}
+          onContextMenu={handleRightClick()}
         >
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />

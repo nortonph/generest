@@ -2,15 +2,19 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
+import * as Tone from 'tone';
 import Shape from './components/Shape.tsx';
+import { createInstrument } from './instrument.tsx';
 
 export class Module { // todo: ask where to put this class
   type: string;
   color: string;
   position: Vector3;
-  constructor(type: string, position: Vector3) {
+  object: Tone.Synth | undefined;
+  constructor(type: string, position: Vector3, object: Tone.Synth | undefined) {
     this.type = type;
     this.position = position;
+    this.object = object;
     switch (type) {
       case 'source':
         this.color = 'royalblue'; break;
@@ -30,9 +34,9 @@ function App() {
 
   // "Menu items"
   function createShapes() {
-    const source = new Module('source', new Vector3(-3, 6, 0));
-    const trigger = new Module('trigger', new Vector3(0, 6, 0));
-    const instrument = new Module('instrument', new Vector3(3, 6, 0));
+    const source = new Module('source', new Vector3(-3, 6, 0), undefined);
+    const trigger = new Module('trigger', new Vector3(0, 6, 0), createInstrument());
+    const instrument = new Module('instrument', new Vector3(3, 6, 0), undefined);
     setModules([source, trigger, instrument]);
   }
   useEffect(() => {
@@ -47,9 +51,10 @@ function App() {
         modules.map((module, idx) => {
           return (
             <Shape
-              type={module.type}
+              type={module.type}  // todo: pass whole module as one prop?
               color={module.color}
               position={module.position}
+              object={module.object}
               modules={modules}
               setModules={setModules}
             ></Shape>
