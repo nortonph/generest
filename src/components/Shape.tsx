@@ -4,6 +4,7 @@ import { Mesh, Vector3, ThreeEvent } from 'three'; // todo: ask where ThreeEvent
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
+import { playInstrument } from '../instrument';
 
 interface ShapeProps {
   type: string;
@@ -55,7 +56,7 @@ function Shape(props: ShapeProps) {
   const handlePointerOver = () => {
     // starts hovering
     api.start({
-      color: 'hotpink',
+      color: 'thistle',
     });
   };
   const handlePointerOut = () => {

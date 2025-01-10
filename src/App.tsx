@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import Shape from './components/Shape.tsx';
 
-export class Module {
+export class Module { // todo: ask where to put this class
   type: string;
   color: string;
   position: Vector3;
@@ -12,10 +12,12 @@ export class Module {
     this.type = type;
     this.position = position;
     switch (type) {
-      case 'beatBox':
-        this.color = 'orange'; break;
-      case 'melodyBox':
+      case 'source':
         this.color = 'royalblue'; break;
+      case 'trigger':
+        this.color = 'hotpink'; break;
+      case 'instrument':
+        this.color = 'orange'; break;
       default:
         this.color = 'white';
     }
@@ -28,9 +30,10 @@ function App() {
 
   // "Menu items"
   function createShapes() {
-    const beatBox = new Module('beatBox', new Vector3(-2, 6, 0));
-    const melodyBox = new Module('melodyBox', new Vector3(2, 6, 0));
-    setModules([beatBox, melodyBox]);
+    const source = new Module('source', new Vector3(-3, 6, 0));
+    const trigger = new Module('trigger', new Vector3(0, 6, 0));
+    const instrument = new Module('instrument', new Vector3(3, 6, 0));
+    setModules([source, trigger, instrument]);
   }
   useEffect(() => {
     createShapes();
