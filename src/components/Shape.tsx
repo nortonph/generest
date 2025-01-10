@@ -1,19 +1,19 @@
 import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, ThreeEvent } from 'three';
+import { Mesh, Vector3, ThreeEvent } from 'three';  // todo: ask where ThreeEvent comes from (how to properly import types?)
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
 
-interface ThingProps {
+interface ShapeProps {
   type: string;
   color: string;
   position: Vector3;
   modules: Module[];  // state of App() containing all
-  setModules: Function;
+  setModules: Function;  // todo: ask how to better define function (linting error: "Prefer explicitly defining any function parameters and return type")
 }
 
-function Thing(props: ThingProps) {
+function Shape(props: ShapeProps) {
   // This reference will give us direct access to the mesh
   // from r3f docs - "using with typescript" about null!:
   // "The exclamation mark is a non-null assertion that will let TS know that ref.current is defined when we access it in effects."
@@ -23,7 +23,7 @@ function Thing(props: ThingProps) {
   const [active, setActive] = useState(false);
   // todo: ask if useRef makes sense in this context or if there is a better way
   // todo: (this needs to be accessible in handleClick callback and in useFrame and should not trigger a re-render)
-  let rotating = useRef(true);
+  const rotating = useRef(true);
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -55,14 +55,13 @@ function Thing(props: ThingProps) {
     }
   }, []);
   const handlePointerOver = () => {
-    // hovering
-    console.log('pointer over')
+    // starts hovering
     api.start({
       color: 'hotpink',
     });
   };
   const handlePointerOut = () => {
-    console.log('pointer out')
+    // stops hovering
     api.start({
       color: props.color,
     });
@@ -75,7 +74,7 @@ function Thing(props: ThingProps) {
     }
   });
 
-  function cloneThing(type: string) {
+  function cloneShape(type: string) {
     if (!active) {
       setActive(true);
       props.setModules([...props.modules, new Module(props.type, meshRef.current.position)]);
@@ -87,25 +86,25 @@ function Thing(props: ThingProps) {
     <>
     <DragControls
       onDragStart={() => {
-        cloneThing(props.type);
+        cloneShape(props.type);
       }}
     >
       <animated.mesh
         ref={meshRef}
         position={props.position}
         scale={springs.scale}
-        // onClick={(event) => handleClick()}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
-        onContextMenu={handleClick()}
+        onContextMenu={handleClick()}  // right click
       >
         <boxGeometry args={[1, 1, 1]} />
         <animated.meshStandardMaterial color={springs.color} />
-        <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html>
+        {/* uncomment the following to track whether this object re-renders due to state change */}
+        {/* <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html> */}
       </animated.mesh>
     </DragControls>
     </>
   );
 }
 
-export default Thing;
+export default Shape;

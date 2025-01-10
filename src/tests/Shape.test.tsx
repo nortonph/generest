@@ -1,6 +1,6 @@
 import { describe, test } from 'vitest';
 
-describe('Instrument', () => {
+describe('Shape', () => {
   test('should do nothing', () => {
     return;
   });

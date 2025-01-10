@@ -2,7 +2,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import Thing from './components/Thing.tsx';
+import Shape from './components/Shape.tsx';
 
 export class Module {
   type: string;
@@ -27,13 +27,13 @@ function App() {
   const [modules, setModules] = useState<Module[]>([]);
 
   // "Menu items"
-  function createThings() {
+  function createShapes() {
     const beatBox = new Module('beatBox', new Vector3(-2, 6, 0));
     const melodyBox = new Module('melodyBox', new Vector3(2, 6, 0));
     setModules([beatBox, melodyBox]);
   }
   useEffect(() => {
-    createThings();
+    createShapes();
   }, []);
 
   // JSX
@@ -43,13 +43,13 @@ function App() {
       {modules.length ? (
         modules.map((module, idx) => {
           return (
-            <Thing
+            <Shape
               type={module.type}
               color={module.color}
               position={module.position}
               modules={modules}
               setModules={setModules}
-            ></Thing>
+            ></Shape>
           );
         })
       ) : (
