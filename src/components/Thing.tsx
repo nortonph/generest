@@ -1,6 +1,6 @@
-import { Dispatch, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3 } from 'three';
+import { Mesh, Vector3, ThreeEvent } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
@@ -23,7 +23,7 @@ function Thing(props: ThingProps) {
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
   const [rotating, setRotating] = useState(true);
-  const [expanded, setExpanded] = useState(false);
+  // const [expanded, setExpanded] = useState(false);
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -42,13 +42,18 @@ function Thing(props: ThingProps) {
   }));
 
   // Mouse Interface
-  function handleClick() {
-    setRotating(!rotating);
-    setExpanded(!expanded);
-    api.start({
-      scale: expanded ? 1.3 : 1,
-    });
-  }
+  const handleClick = useCallback(() => {
+    let expanded = false;
+
+    return (event: ThreeEvent<MouseEvent>) => {
+      event.nativeEvent.preventDefault();
+      expanded = !expanded;
+      setRotating(!rotating);  // todo: move or replace state (as with expanded)?
+      api.start({
+        scale: expanded ? 1.3 : 1,
+      });
+    }
+  }, []);
   function handleHover(hovered: boolean) {
     setHover(hovered);
     api.start({
@@ -85,11 +90,7 @@ function Thing(props: ThingProps) {
         // onClick={(event) => handleClick()}
         onPointerOver={() => handleHover(true)}
         onPointerOut={() => handleHover(false)}
-        onContextMenu={(event) => {
-          // right click
-          event.nativeEvent.preventDefault();
-          handleClick();
-        }}
+        onContextMenu={handleClick()}
       >
         <boxGeometry args={[1, 1, 1]} />
         <animated.meshStandardMaterial color={springs.color} />
