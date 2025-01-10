@@ -23,6 +23,8 @@ function Shape(props: ShapeProps) {
   // States and Refs
   const [active, setActive] = useState(false);
   const rotating = useRef(true);
+  const expanded = useRef(false);
+  const dragLimits = useRef<[[number, number] | undefined, [number, number] | undefined, [number, number] | undefined]>([undefined, undefined, undefined]); // to disable dragging while expanded
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -42,23 +44,29 @@ function Shape(props: ShapeProps) {
 
   // Mouse Interface
   const handleClick = useCallback(() => {
-    let expanded = false;
 
     return (event: ThreeEvent<MouseEvent>) => {
       event.nativeEvent.preventDefault();
-      expanded = !expanded;
-      rotating.current = !expanded;
+      expanded.current = !expanded.current;
+      rotating.current = !expanded.current;
+      if (expanded.current) {
+        dragLimits.current = [[0,0],[0,0],[0,0]];
+      } else {
+        dragLimits.current = [undefined, undefined, undefined];
+      }
       api.start({
-        scale: expanded ? 1.3 : 1,
+        scale: expanded.current ? 1.3 : 1,
       });
     };
   }, []);
+
   const handlePointerOver = () => {
     // starts hovering
     api.start({
       color: 'thistle',
     });
   };
+
   const handlePointerOut = () => {
     // stops hovering
     api.start({
@@ -74,6 +82,7 @@ function Shape(props: ShapeProps) {
   });
 
   function cloneShape(type: string) {
+    // when dragging an inactive Shape ("menu item"), set it active and create a new inactive one in its place
     if (!active) {
       setActive(true);
       props.setModules([
@@ -87,6 +96,7 @@ function Shape(props: ShapeProps) {
   return (
     <>
       <DragControls
+        dragLimits={ dragLimits.current } // todo: WHY DOESN'T THIS UPDATE?
         onDragStart={() => {
           cloneShape(props.type);
         }}
