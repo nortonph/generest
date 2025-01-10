@@ -2,7 +2,7 @@ import { Dispatch, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls } from '@react-three/drei';
+import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
 
 interface ThingProps {
@@ -72,6 +72,7 @@ function Thing(props: ThingProps) {
 
   // JSX
   return (
+    <>
     <DragControls
       onDragStart={() => {
         cloneThing(props.type);
@@ -92,8 +93,10 @@ function Thing(props: ThingProps) {
       >
         <boxGeometry args={[1, 1, 1]} />
         <animated.meshStandardMaterial color={springs.color} />
+        <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html>
       </animated.mesh>
     </DragControls>
+    </>
   );
 }
 
