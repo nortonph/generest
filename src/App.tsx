@@ -6,6 +6,8 @@ import * as Tone from 'tone';
 import Shape from './components/Shape.tsx';
 import { createInstrument } from './instrument.tsx';
 
+// A Module can be an instrument, an online data source (API) or another trigger,
+// each represented by a 3d shape in the interface.
 export class Module {
   // todo: put this in a different file?
   type: string;
@@ -36,7 +38,8 @@ function App() {
   // States
   const [modules, setModules] = useState<Module[]>([]);
 
-  // "Menu items"
+  // "Menu items" (i.e. one static instance of each module that can be cloned
+  //  and activated by dragging it into the interface area)
   function createShapes() {
     const source = new Module('source', new Vector3(-3, 6, 0), undefined);
     const trigger = new Module(

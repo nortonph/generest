@@ -1,3 +1,7 @@
+/*  This React Three Fiber component renders a 3d shape that represents
+    a Module (Datasource / Instrument) in the interface.
+*/
+
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFrame, ThreeEvent } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
@@ -7,6 +11,7 @@ import * as Tone from 'tone';
 import { Module } from '../App';
 import { playInstrument } from '../instrument';
 
+// A property object that is passed to the Shape component
 interface ShapeProps {
   type: string;
   color: string;
@@ -41,9 +46,11 @@ function Shape(props: ShapeProps) {
   }, [dragLimits, expanded]);
 
   // React Spring properties (Imperative API)
+  // - easing animations for changes of color, size etc.
   const [springs, api] = useSpring(() => ({
     scale: 1,
     color: props.color,
+    // set different durations based on what is being animated
     config: (key) => {
       switch (key) {
         case 'scale':
@@ -67,6 +74,7 @@ function Shape(props: ShapeProps) {
       }
     }
   };
+
   const handleRightClick = useCallback(() => {
     return (event: ThreeEvent<MouseEvent>) => {
       event.nativeEvent.preventDefault();
@@ -101,7 +109,7 @@ function Shape(props: ShapeProps) {
     });
   };
 
-  // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
+  // Executes on each frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
     if (rotating.current) {
       meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
@@ -122,6 +130,7 @@ function Shape(props: ShapeProps) {
   // JSX
   return (
     <>
+      {/* This wrapping tag enables drag-and-drop by left click on the shape */}
       <DragControls
         dragLimits={dragLimits.current} // todo: WHY DOESN'T THIS UPDATE? Alternative solution: have a draggable and a non-draggable holding component
         onDragStart={() => {
