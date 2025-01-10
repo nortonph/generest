@@ -20,7 +20,7 @@ function Thing(props: ThingProps) {
   const meshRef = useRef<Mesh>(null!);
 
   // States
-  const [hovered, setHover] = useState(false);
+  // const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
   const [rotating, setRotating] = useState(true);
   // const [expanded, setExpanded] = useState(false);
@@ -54,12 +54,19 @@ function Thing(props: ThingProps) {
       });
     }
   }, []);
-  function handleHover(hovered: boolean) {
-    setHover(hovered);
+  const handlePointerOver = () => {
+    // hovering
+    console.log('pointer over')
     api.start({
-      color: hovered ? 'hotpink' : props.color,
+      color: 'hotpink',
     });
-  }
+  };
+  const handlePointerOut = () => {
+    console.log('pointer out')
+    api.start({
+      color: props.color,
+    });
+  };
 
   // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
@@ -88,8 +95,8 @@ function Thing(props: ThingProps) {
         position={props.position}
         scale={springs.scale}
         // onClick={(event) => handleClick()}
-        onPointerOver={() => handleHover(true)}
-        onPointerOut={() => handleHover(false)}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         onContextMenu={handleClick()}
       >
         <boxGeometry args={[1, 1, 1]} />
