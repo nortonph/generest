@@ -2,8 +2,8 @@
     a Module (Datasource / Instrument) in the interface.
 */
 
-import { useCallback, useRef, useState, useEffect } from 'react';
-import { useFrame, ThreeEvent } from '@react-three/fiber';
+import { useCallback, useRef, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
@@ -18,6 +18,7 @@ interface ShapeProps {
   object: Instrument | undefined; // todo: this is a placeholder?
   modules: Module[]; // state of App() containing all
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
+  key: number; // for react component; could change during object lifetime?
 } // todo: move to type definition file
 
 function Shape(props: ShapeProps) {
@@ -68,8 +69,7 @@ function Shape(props: ShapeProps) {
   };
 
   const handleRightClick = useCallback(() => {
-    return (event: ThreeEvent<MouseEvent>) => {
-      event.nativeEvent.preventDefault();
+    return () => {
       if (!active) return null;
       expanded.current = !expanded.current;
       rotating.current = !expanded.current;
@@ -135,7 +135,7 @@ function Shape(props: ShapeProps) {
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
-          <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html>
+          {/* <Html> <p style={{ color: 'white' }}>Render ID – {Math.random()}</p> </Html> */}
         </animated.mesh>
       </DragControls>
     </>
