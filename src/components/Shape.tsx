@@ -7,16 +7,15 @@ import { useFrame, ThreeEvent } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls } from '@react-three/drei';
-import * as Tone from 'tone';
 import { Module } from '../App';
-import { playInstrument } from '../instrument';
+import { Instrument, transport } from '../instrument';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
   type: string;
   color: string;
   position: Vector3;
-  object: Tone.Synth | undefined; // todo: this is a placeholder?
+  object: Instrument | undefined; // todo: this is a placeholder?
   modules: Module[]; // state of App() containing all
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
 } // todo: move to type definition file
@@ -67,9 +66,13 @@ function Shape(props: ShapeProps) {
   const handleLeftClick = () => {
     if (expanded.current) {
       switch (props.type) {
-        case 'trigger':
+        case 'instrument':
           console.log('trying to play sound on ' + props.type);
-          playInstrument(props.object);
+          props.object?.playSequence();
+          break;
+        case 'trigger':
+          console.log('starting transport');
+          transport.toggle();
           break;
       }
     }
@@ -145,6 +148,7 @@ function Shape(props: ShapeProps) {
           onPointerOut={handlePointerOut}
           onClick={handleLeftClick}
           onContextMenu={handleRightClick()}
+          onDoubleClick={() => props.object?.stopSequence()} // todo: remove
         >
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />

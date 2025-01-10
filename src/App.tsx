@@ -2,9 +2,8 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import * as Tone from 'tone';
 import Shape from './components/Shape.tsx';
-import { createInstrument } from './instrument.tsx';
+import { Instrument, transport } from './instrument.tsx';
 
 // A Module can be an instrument, an online data source (API) or another trigger,
 // each represented by a 3d shape in the interface.
@@ -13,8 +12,8 @@ export class Module {
   type: string;
   color: string;
   position: Vector3;
-  object: Tone.Synth | undefined;
-  constructor(type: string, position: Vector3, object: Tone.Synth | undefined) {
+  object: Instrument | undefined;
+  constructor(type: string, position: Vector3, object: Instrument | undefined) {
     this.type = type;
     this.position = position;
     this.object = object;
@@ -45,12 +44,12 @@ function App() {
     const trigger = new Module(
       'trigger',
       new Vector3(0, 6, 0),
-      createInstrument()
+      undefined
     );
     const instrument = new Module(
       'instrument',
       new Vector3(3, 6, 0),
-      undefined
+      new Instrument(),
     );
     setModules([source, trigger, instrument]);
   }
