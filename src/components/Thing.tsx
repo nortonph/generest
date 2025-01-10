@@ -20,10 +20,10 @@ function Thing(props: ThingProps) {
   const meshRef = useRef<Mesh>(null!);
 
   // States
-  // const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
-  const [rotating, setRotating] = useState(true);
-  // const [expanded, setExpanded] = useState(false);
+  // todo: ask if useRef makes sense in this context or if there is a better way
+  // todo: (this needs to be accessible in handleClick callback and in useFrame and should not trigger a re-render)
+  let rotating = useRef(true);
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -48,7 +48,7 @@ function Thing(props: ThingProps) {
     return (event: ThreeEvent<MouseEvent>) => {
       event.nativeEvent.preventDefault();
       expanded = !expanded;
-      setRotating(!rotating);  // todo: move or replace state (as with expanded)?
+      rotating.current = !expanded;
       api.start({
         scale: expanded ? 1.3 : 1,
       });
@@ -70,7 +70,7 @@ function Thing(props: ThingProps) {
 
   // Execute on frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
-    if (rotating) {
+    if (rotating.current) {
       meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
     }
   });
