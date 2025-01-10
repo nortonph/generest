@@ -68,7 +68,9 @@ function Shape(props: ShapeProps) {
       switch (props.type) {
         case 'instrument':
           console.log('trying to play sound on ' + props.type);
-          props.object?.playSequence();
+          props.object?.isPlaying
+            ? props.object?.stopSequence()
+            : props.object?.playSequence();
           break;
         case 'trigger':
           console.log('starting transport');
@@ -81,6 +83,7 @@ function Shape(props: ShapeProps) {
   const handleRightClick = useCallback(() => {
     return (event: ThreeEvent<MouseEvent>) => {
       event.nativeEvent.preventDefault();
+      if (!active) return null;
       expanded.current = !expanded.current;
       rotating.current = !expanded.current;
       if (expanded.current) {
@@ -96,7 +99,7 @@ function Shape(props: ShapeProps) {
         scale: expanded.current ? 1.3 : 1,
       });
     };
-  }, []);
+  }, [active]);
 
   const handlePointerOver = () => {
     // starts hovering
@@ -148,7 +151,6 @@ function Shape(props: ShapeProps) {
           onPointerOut={handlePointerOut}
           onClick={handleLeftClick}
           onContextMenu={handleRightClick()}
-          onDoubleClick={() => props.object?.stopSequence()} // todo: remove
         >
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />
