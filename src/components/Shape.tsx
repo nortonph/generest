@@ -1,8 +1,8 @@
-import { useCallback, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3, ThreeEvent } from 'three'; // todo: ask where ThreeEvent comes from (how to properly import types?)
+import { useCallback, useRef, useState, useEffect } from 'react';
+import { useFrame, ThreeEvent } from '@react-three/fiber';
+import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls, Html } from '@react-three/drei';
+import { DragControls } from '@react-three/drei';
 import * as Tone from 'tone';
 import { Module } from '../App';
 import { playInstrument } from '../instrument';
@@ -11,9 +11,9 @@ interface ShapeProps {
   type: string;
   color: string;
   position: Vector3;
-  object: Tone.Synth | undefined; // todo: this is a placeholder
+  object: Tone.Synth | undefined; // todo: this is a placeholder?
   modules: Module[]; // state of App() containing all
-  setModules: Function; // todo: ask how to better define function (linting error: "Prefer explicitly defining any function parameters and return type")
+  setModules: React.Dispatch<React.SetStateAction<Module[]>>;
 } // todo: move to type definition file
 
 function Shape(props: ShapeProps) {
@@ -26,7 +26,19 @@ function Shape(props: ShapeProps) {
   const [active, setActive] = useState(false);
   const rotating = useRef(true);
   const expanded = useRef(false);
-  const dragLimits = useRef<[[number, number] | undefined, [number, number] | undefined, [number, number] | undefined]>([undefined, undefined, undefined]); // to disable dragging while expanded
+  const dragLimits = useRef<
+    [
+      [number, number] | undefined,
+      [number, number] | undefined,
+      [number, number] | undefined
+    ]
+  >([undefined, undefined, undefined]); // to disable dragging while expanded
+
+  // todo: this is for debugging. for some reason dragLimits does not seem to be triggering useEffect (may be the reason why it doesn't reach <DragControls>)
+  useEffect(() => {
+    console.log(dragLimits.current);
+    console.log(expanded.current);
+  }, [dragLimits, expanded]);
 
   // React Spring properties (Imperative API)
   const [springs, api] = useSpring(() => ({
@@ -54,15 +66,18 @@ function Shape(props: ShapeProps) {
           break;
       }
     }
-  }
+  };
   const handleRightClick = useCallback(() => {
-
     return (event: ThreeEvent<MouseEvent>) => {
       event.nativeEvent.preventDefault();
       expanded.current = !expanded.current;
       rotating.current = !expanded.current;
       if (expanded.current) {
-        dragLimits.current = [[0,0],[0,0],[0,0]];
+        dragLimits.current = [
+          [0, 0],
+          [0, 0],
+          [0, 0],
+        ];
       } else {
         dragLimits.current = [undefined, undefined, undefined];
       }
@@ -93,7 +108,7 @@ function Shape(props: ShapeProps) {
     }
   });
 
-  function cloneShape(type: string) {
+  function cloneShape() {
     // when dragging an inactive Shape ("menu item"), set it active and create a new inactive one in its place
     if (!active) {
       setActive(true);
@@ -108,9 +123,9 @@ function Shape(props: ShapeProps) {
   return (
     <>
       <DragControls
-        dragLimits={ dragLimits.current } // todo: WHY DOESN'T THIS UPDATE?
+        dragLimits={dragLimits.current} // todo: WHY DOESN'T THIS UPDATE? Alternative solution: have a draggable and a non-draggable holding component
         onDragStart={() => {
-          cloneShape(props.type);
+          cloneShape();
         }}
       >
         <animated.mesh
@@ -124,7 +139,7 @@ function Shape(props: ShapeProps) {
         >
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />
-          {/* uncomment the following to track whether this object re-renders due to state change */}
+          {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
           {/* <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html> */}
         </animated.mesh>
       </DragControls>

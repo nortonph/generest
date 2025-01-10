@@ -8,5 +8,5 @@ export function createInstrument() {
 }
 
 export function playInstrument(instrument: Tone.Synth) {
-  instrument.triggerAttackRelease('D4', '8n');
+  instrument.triggerAttackRelease('D5', '16n');
 }

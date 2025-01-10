@@ -6,7 +6,8 @@ import * as Tone from 'tone';
 import Shape from './components/Shape.tsx';
 import { createInstrument } from './instrument.tsx';
 
-export class Module { // todo: ask where to put this class
+export class Module {
+  // todo: put this in a different file?
   type: string;
   color: string;
   position: Vector3;
@@ -17,11 +18,14 @@ export class Module { // todo: ask where to put this class
     this.object = object;
     switch (type) {
       case 'source':
-        this.color = 'royalblue'; break;
+        this.color = 'royalblue';
+        break;
       case 'trigger':
-        this.color = 'hotpink'; break;
+        this.color = 'hotpink';
+        break;
       case 'instrument':
-        this.color = 'orange'; break;
+        this.color = 'orange';
+        break;
       default:
         this.color = 'white';
     }
@@ -35,8 +39,16 @@ function App() {
   // "Menu items"
   function createShapes() {
     const source = new Module('source', new Vector3(-3, 6, 0), undefined);
-    const trigger = new Module('trigger', new Vector3(0, 6, 0), createInstrument());
-    const instrument = new Module('instrument', new Vector3(3, 6, 0), undefined);
+    const trigger = new Module(
+      'trigger',
+      new Vector3(0, 6, 0),
+      createInstrument()
+    );
+    const instrument = new Module(
+      'instrument',
+      new Vector3(3, 6, 0),
+      undefined
+    );
     setModules([source, trigger, instrument]);
   }
   useEffect(() => {
@@ -48,10 +60,10 @@ function App() {
     <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
       <Environment />
       {modules.length ? (
-        modules.map((module, idx) => {
+        modules.map((module) => {
           return (
             <Shape
-              type={module.type}  // todo: pass whole module as one prop?
+              type={module.type} // todo: pass whole module as one prop?
               color={module.color}
               position={module.position}
               object={module.object}
