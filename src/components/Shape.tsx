@@ -6,7 +6,7 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 import { useFrame, ThreeEvent } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls } from '@react-three/drei';
+import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
 import { Instrument, transport } from '../instrument';
 
@@ -30,19 +30,6 @@ function Shape(props: ShapeProps) {
   const [active, setActive] = useState(false);
   const rotating = useRef(true);
   const expanded = useRef(false);
-  const dragLimits = useRef<
-    [
-      [number, number] | undefined,
-      [number, number] | undefined,
-      [number, number] | undefined
-    ]
-  >([undefined, undefined, undefined]); // to disable dragging while expanded
-
-  // todo: this is for debugging. for some reason dragLimits does not seem to be triggering useEffect (may be the reason why it doesn't reach <DragControls>)
-  useEffect(() => {
-    console.log(dragLimits.current);
-    console.log(expanded.current);
-  }, [dragLimits, expanded]);
 
   // React Spring properties (Imperative API)
   // - easing animations for changes of color, size etc.
@@ -73,7 +60,7 @@ function Shape(props: ShapeProps) {
             : props.object?.playSequence();
           break;
         case 'trigger':
-          console.log('starting transport');
+          console.log('toggling transport');
           transport.toggle();
           break;
       }
@@ -87,13 +74,7 @@ function Shape(props: ShapeProps) {
       expanded.current = !expanded.current;
       rotating.current = !expanded.current;
       if (expanded.current) {
-        dragLimits.current = [
-          [0, 0],
-          [0, 0],
-          [0, 0],
-        ];
-      } else {
-        dragLimits.current = [undefined, undefined, undefined];
+        null; // removed non-working solution to make expanded shape undraggable (see commit on dragLimit)
       }
       api.start({
         scale: expanded.current ? 1.3 : 1,
@@ -138,7 +119,6 @@ function Shape(props: ShapeProps) {
     <>
       {/* This wrapping tag enables drag-and-drop by left click on the shape */}
       <DragControls
-        dragLimits={dragLimits.current} // todo: WHY DOESN'T THIS UPDATE? Alternative solution: have a draggable and a non-draggable holding component
         onDragStart={() => {
           cloneShape();
         }}
@@ -155,7 +135,7 @@ function Shape(props: ShapeProps) {
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
-          {/* <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html> */}
+          <Html><p style={{color: 'white'}}>Render ID – {Math.random()}</p></Html>
         </animated.mesh>
       </DragControls>
     </>
