@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import Shape from './components/Shape.tsx';
 import { Instrument } from './instrument.tsx';
+import { Datasource } from './datasource.tsx';
 
 // A Module can be an instrument, an online data source (API) or another trigger,
 // each represented by a 3d shape in the interface.
@@ -12,11 +13,18 @@ export class Module {
   type: string;
   color: string;
   position: Vector3;
-  object: Instrument | undefined;
-  constructor(type: string, position: Vector3, object: Instrument | undefined) {
+  instrument: Instrument | undefined;
+  datasource: Datasource | undefined;
+  constructor(
+    type: string,
+    position: Vector3,
+    instrument: Instrument | undefined,
+    datasource: Datasource | undefined
+  ) {
     this.type = type;
     this.position = position;
-    this.object = object;
+    this.instrument = instrument;
+    this.datasource = datasource;
     switch (type) {
       case 'source':
         this.color = 'royalblue';
@@ -40,12 +48,23 @@ function App() {
   // "Menu items" (i.e. one static instance of each module that can be cloned
   //  and activated by dragging it into the interface area)
   function createShapes() {
-    const source = new Module('source', new Vector3(-3, 6, 0), undefined);
-    const trigger = new Module('trigger', new Vector3(0, 6, 0), undefined);
+    const source = new Module(
+      'source',
+      new Vector3(-3, 6, 0),
+      undefined,
+      new Datasource()
+    );
+    const trigger = new Module(
+      'trigger',
+      new Vector3(0, 6, 0),
+      undefined,
+      undefined
+    );
     const instrument = new Module(
       'instrument',
       new Vector3(3, 6, 0),
-      new Instrument()
+      new Instrument(),
+      undefined
     );
     setModules([source, trigger, instrument]);
   }
@@ -63,10 +82,7 @@ function App() {
             modules.map((module, idx) => {
               return (
                 <Shape
-                  type={module.type} // todo: pass whole module as one prop?
-                  color={module.color}
-                  position={module.position}
-                  object={module.object}
+                  module={module}
                   modules={modules}
                   setModules={setModules}
                   key={idx}

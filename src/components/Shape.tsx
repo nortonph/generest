@@ -6,17 +6,14 @@ import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls, Html } from '@react-three/drei';
+import { DragControls } from '@react-three/drei';
 import { Module } from '../App';
 import { Instrument, transport } from '../instrument';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
-  type: string;
-  color: string;
-  position: Vector3;
-  object: Instrument | undefined; // todo: this is a placeholder?
-  modules: Module[]; // state of App() containing all
+  module: Module;
+  modules: Module[]; // state of App() containing all Modules
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
   key: number; // for react component; could change during object lifetime?
 } // todo: move to type definition file
@@ -36,7 +33,7 @@ function Shape(props: ShapeProps) {
   // - easing animations for changes of color, size etc.
   const [springs, api] = useSpring(() => ({
     scale: 1,
-    color: props.color,
+    color: props.module.color,
     // set different durations based on what is being animated
     config: (key) => {
       switch (key) {
@@ -53,16 +50,13 @@ function Shape(props: ShapeProps) {
   // Mouse Interface
   const handleLeftClick = () => {
     if (expanded.current) {
-      switch (props.type) {
+      switch (props.module.type) {
         case 'instrument':
-          console.log('trying to play sound on ' + props.type);
-          props.object?.isPlaying
-            ? props.object?.stopSequence()
-            : props.object?.playSequence();
+          console.log('Clicked on instrument (not implemented)');
           break;
         case 'trigger':
           console.log('toggling transport');
-          transport.toggle();
+          transport.toggle(); // todo: remove
           break;
       }
     }
@@ -92,7 +86,7 @@ function Shape(props: ShapeProps) {
   const handlePointerOut = () => {
     // stops hovering
     api.start({
-      color: props.color,
+      color: props.module.color,
     });
   };
 
@@ -109,7 +103,7 @@ function Shape(props: ShapeProps) {
       setActive(true);
       props.setModules([
         ...props.modules,
-        new Module(props.type, meshRef.current.position, props.object),
+        new Module(props.module.type, meshRef.current.position, props.module.instrument, props.module.datasource),
       ]);
     }
   }
@@ -125,7 +119,7 @@ function Shape(props: ShapeProps) {
       >
         <animated.mesh
           ref={meshRef}
-          position={props.position}
+          position={props.module.position}
           scale={springs.scale}
           onPointerOver={handlePointerOver}
           onPointerOut={handlePointerOut}
