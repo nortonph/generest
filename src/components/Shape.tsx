@@ -5,9 +5,9 @@
 import './Shape.css';
 import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3 } from 'three';
+import { Mesh } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls, Html } from '@react-three/drei';
+import { DragControls } from '@react-three/drei';
 import { Module } from '../App';
 import Contols from './Controls';
 import { transport } from '../instrument';
@@ -29,7 +29,6 @@ function Shape(props: ShapeProps) {
   // States and Refs
   const [active, setActive] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(false);
-  const [nonExpandedPosition, setNonExpandedPosition] = useState(props.module.position);
   let rotating = true;
   let expanded = false;
 
@@ -37,15 +36,12 @@ function Shape(props: ShapeProps) {
   // - easing animations for changes of color, size etc.
   const [springs, api] = useSpring(() => ({
     scale: 1,
-    position: props.module.position,
     color: props.module.color,
     // set different durations based on what is being animated
     config: (key) => {
       switch (key) {
         case 'scale':
           return { duration: 100 };
-        case 'position':
-          return { duration: 500 };
         case 'color':
           return { duration: 200 };
         default:
@@ -75,12 +71,8 @@ function Shape(props: ShapeProps) {
       expanded = !expanded;
       rotating = !expanded;
       setControlsVisible(expanded);
-      if (!expanded) {
-        setNonExpandedPosition(meshRef.current.position);
-      }
       api.start({
-        scale: expanded ? 4 : 1,
-        position: expanded ? new Vector3(0, 0, 0) : nonExpandedPosition,
+        scale: expanded ? 5 : 1,
       });
     };
   }, [active]);
@@ -125,13 +117,10 @@ function Shape(props: ShapeProps) {
         onDragStart={() => {
           cloneShape();
         }}
-        onDragEnd={() => {
-          props.module.position = meshRef.current.position;
-        }}
       >
         <animated.mesh
           ref={meshRef}
-          position={springs.position}
+          position={props.module.position}
           scale={springs.scale}
           onPointerOver={handlePointerOver}
           onPointerOut={handlePointerOut}
@@ -144,10 +133,6 @@ function Shape(props: ShapeProps) {
           {/* <Html> <p style={{ color: 'white' }}>Render ID – {Math.random()}</p> </Html> */}
           {controlsVisible ? <Contols /> : null}
         </animated.mesh>
-        <Html>
-          <p>{props.module.position}</p>
-          <p>{nonExpandedPosition}</p>
-        </Html>
       </DragControls>
     </>
   );
