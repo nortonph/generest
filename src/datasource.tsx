@@ -12,8 +12,8 @@ export class Datasource {
     } else {
       // use default API url (Newcastle Urban Observatory) if optional url was not passed
       this.url = {
-        baseUrl: 'https://newcastle.urbanobservatory.ac.uk/api/v1.1/sensors',
-        pathEnd: 'data/json/',
+        baseUrl: 'https://newcastle.urbanobservatory.ac.uk/api/v1.1/sensors/',
+        pathEnd: '/data/json/',
       };
     }
     if (entity) {
@@ -40,21 +40,36 @@ export class Datasource {
 
     // construct query url from parts: baseUrl + entity + pathEnd + [query parameters]
     let queryUrl = '';
+    let path: string;
+    if (this.url.pathEnd[0] === '/') {
+      path = this.entity + this.url.pathEnd;
+    } else {
+      path = this.entity + '/' + this.url.pathEnd;
+    }
     try {
-      const firstPart = new URL(this.entity, this.url.baseUrl);
-      const fullPath = new URL(this.url.pathEnd, firstPart);
+      const fullUrl = new URL(
+        path,
+        this.url.baseUrl
+      ).href;
       const queryParams = new URLSearchParams({
         starttime: dayFormatted,
         endtime: nextDayFormatted,
       });
-      queryUrl = fullPath + '?' + queryParams;
+      queryUrl = fullUrl + '?' + queryParams.toString();
     } catch (error) {
       console.log('ERROR: problem constructing query url - ' + error);
     }
 
     // fetch data
     try {
-      const response = await fetch(queryUrl);
+      console.log('trying to fetch with query url: ' + queryUrl)
+      const response = await fetch(queryUrl, {
+        mode: 'cors',
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+        }
+      });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }

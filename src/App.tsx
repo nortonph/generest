@@ -67,6 +67,10 @@ function App() {
       undefined
     );
     setModules([source, trigger, instrument]);
+    // todo: remove
+    const yesterday = new Date(Date.now());
+    yesterday.setDate(yesterday.getDate() - 1);
+    source.datasource?.getFullDay(yesterday);
   }
   useEffect(() => {
     createShapes();
