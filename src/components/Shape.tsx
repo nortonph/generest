@@ -2,12 +2,14 @@
     a Module (Datasource / Instrument) in the interface.
 */
 
+import './Shape.css'
 import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls } from '@react-three/drei';
+import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
+import Contols from './Controls';
 import { Instrument, transport } from '../instrument';
 
 // A property object that is passed to the Shape component
@@ -16,7 +18,7 @@ interface ShapeProps {
   modules: Module[]; // state of App() containing all Modules
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
   key: number; // for react component; could change during object lifetime?
-} // todo: move to type definition file
+}
 
 function Shape(props: ShapeProps) {
   // This reference will give us direct access to the mesh
@@ -103,7 +105,7 @@ function Shape(props: ShapeProps) {
       setActive(true);
       props.setModules([
         ...props.modules,
-        new Module(props.module.type, meshRef.current.position, props.module.instrument, props.module.datasource),
+        props.module.clone(meshRef.current.position)
       ]);
     }
   }
@@ -130,6 +132,9 @@ function Shape(props: ShapeProps) {
           <animated.meshStandardMaterial color={springs.color} />
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
           {/* <Html> <p style={{ color: 'white' }}>Render ID – {Math.random()}</p> </Html> */}
+          { expanded.current ?
+            (<Contols />) : null
+          }
         </animated.mesh>
       </DragControls>
     </>

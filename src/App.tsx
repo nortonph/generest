@@ -39,6 +39,9 @@ export class Module {
         this.color = 'white';
     }
   }
+  clone(position: Vector3) {
+    return new Module(this.type, position, this.instrument, this.datasource);
+  }
 }
 
 function App() {

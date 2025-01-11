@@ -1,0 +1,8 @@
+.controls {
+  background-color: aquamarine;
+  pointer-events: none;
+}
+
+h1 {
+  pointer-events: none;
+}
