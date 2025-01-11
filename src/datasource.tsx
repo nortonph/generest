@@ -58,24 +58,25 @@ export class Datasource {
     }
 
     // fetch data
-    try {
-      console.log('trying to fetch with query url: ' + queryUrl);
-      const response = await fetch(queryUrl, {
-        mode: 'cors',
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      const json = await response.json();
-      console.log('Hurray: fetched data from ' + queryUrl);
-      console.log(json);
-    } catch (error) {
-      console.log('ERROR: problem fetching data from API - ', error);
-    }
+    //todo: fetch from own back-end
+    // try {
+    //   console.log('trying to fetch with query url: ' + queryUrl);
+    //   const response = await fetch(queryUrl, {
+    //     mode: 'cors',
+    //     method: 'GET',
+    //     headers: {
+    //       'content-type': 'application/json',
+    //     },
+    //   });
+    //   if (!response.ok) {
+    //     throw new Error(`Response status: ${response.status}`);
+    //   }
+    //   const json = await response.json();
+    //   console.log('Hurray: fetched data from ' + queryUrl);
+    //   console.log(json);
+    // } catch (error) {
+    //   console.log('ERROR: problem fetching data from API - ', error);
+    // }
   }
 
   /** Private method to get formatted day (YYYYMMDD) */
