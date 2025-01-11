@@ -41,34 +41,31 @@ export class Datasource {
     // construct query url from parts: baseUrl + entity + pathEnd + [query parameters]
     let queryUrl = '';
     let path: string;
-    if (this.url.pathEnd[0] === '/') {
+    if (this.url.pathEnd.startsWith('/')) {
       path = this.entity + this.url.pathEnd;
     } else {
       path = this.entity + '/' + this.url.pathEnd;
     }
     try {
-      const fullUrl = new URL(
-        path,
-        this.url.baseUrl
-      ).href;
+      const fullUrl = new URL(path, this.url.baseUrl).href;
       const queryParams = new URLSearchParams({
         starttime: dayFormatted,
         endtime: nextDayFormatted,
       });
       queryUrl = fullUrl + '?' + queryParams.toString();
     } catch (error) {
-      console.log('ERROR: problem constructing query url - ' + error);
+      console.log('ERROR: problem constructing query url - ', error);
     }
 
     // fetch data
     try {
-      console.log('trying to fetch with query url: ' + queryUrl)
+      console.log('trying to fetch with query url: ' + queryUrl);
       const response = await fetch(queryUrl, {
         mode: 'cors',
         method: 'GET',
         headers: {
           'content-type': 'application/json',
-        }
+        },
       });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
@@ -77,7 +74,7 @@ export class Datasource {
       console.log('Hurray: fetched data from ' + queryUrl);
       console.log(json);
     } catch (error) {
-      console.log('ERROR: problem fetching data from API - ' + error);
+      console.log('ERROR: problem fetching data from API - ', error);
     }
   }
 

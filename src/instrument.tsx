@@ -3,8 +3,8 @@ import * as Tone from 'tone';
 // IMPORTANT: Browsers will not play any audio until a user clicks something. (see docs)
 
 /** Global timing (tempo, start, stop playback) handlded by a
-*   singleton class (can only be instantiated once)
-*/
+ *   singleton class (can only be instantiated once)
+ */
 class Transport {
   private static _instance: Transport;
 

@@ -2,15 +2,15 @@
     a Module (Datasource / Instrument) in the interface.
 */
 
-import './Shape.css'
+import './Shape.css';
 import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3 } from 'three';
+import { Mesh } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls, Html } from '@react-three/drei';
+import { DragControls } from '@react-three/drei';
 import { Module } from '../App';
 import Contols from './Controls';
-import { Instrument, transport } from '../instrument';
+import { transport } from '../instrument';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
@@ -28,8 +28,9 @@ function Shape(props: ShapeProps) {
 
   // States and Refs
   const [active, setActive] = useState(false);
-  const rotating = useRef(true);
-  const expanded = useRef(false);
+  const [controlsVisible, setControlsVisible] = useState(false);
+  let rotating = true;
+  let expanded = false;
 
   // React Spring properties (Imperative API)
   // - easing animations for changes of color, size etc.
@@ -51,7 +52,7 @@ function Shape(props: ShapeProps) {
 
   // Mouse Interface
   const handleLeftClick = () => {
-    if (expanded.current) {
+    if (expanded) {
       switch (props.module.type) {
         case 'instrument':
           console.log('Clicked on instrument (not implemented)');
@@ -67,13 +68,11 @@ function Shape(props: ShapeProps) {
   const handleRightClick = useCallback(() => {
     return () => {
       if (!active) return null;
-      expanded.current = !expanded.current;
-      rotating.current = !expanded.current;
-      if (expanded.current) {
-        null; // removed non-working solution to make expanded shape undraggable (see commit on dragLimit)
-      }
+      expanded = !expanded;
+      rotating = !expanded;
+      setControlsVisible(expanded);
       api.start({
-        scale: expanded.current ? 1.3 : 1,
+        scale: expanded ? 1.3 : 1,
       });
     };
   }, [active]);
@@ -94,7 +93,7 @@ function Shape(props: ShapeProps) {
 
   // Executes on each frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
-    if (rotating.current) {
+    if (rotating) {
       meshRef.current.rotation.y = meshRef.current.rotation.y -= 0.02;
     }
   });
@@ -105,7 +104,7 @@ function Shape(props: ShapeProps) {
       setActive(true);
       props.setModules([
         ...props.modules,
-        props.module.clone(meshRef.current.position)
+        props.module.clone(meshRef.current.position),
       ]);
     }
   }
@@ -132,9 +131,7 @@ function Shape(props: ShapeProps) {
           <animated.meshStandardMaterial color={springs.color} />
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
           {/* <Html> <p style={{ color: 'white' }}>Render ID – {Math.random()}</p> </Html> */}
-          { expanded.current ?
-            (<Contols />) : null
-          }
+          {controlsVisible ? <Contols /> : null}
         </animated.mesh>
       </DragControls>
     </>

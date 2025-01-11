@@ -6,7 +6,7 @@ import { Html } from '@react-three/drei';
 
 function Controls() {
   return (
-    <Html >
+    <Html>
       <div className='controls'>
         <h1>:D</h1>
       </div>
