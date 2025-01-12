@@ -5,6 +5,11 @@ html, body, #root {
   padding: 0;
 }
 
+:root {
+  --pico-font-size: 90%;
+  --pico-spacing: 0.5rem;
+}
+
 body {
   background: #1b1b1b;
   position: fixed;
