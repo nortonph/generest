@@ -3,9 +3,9 @@
 */
 
 import './Shape.css';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Mesh, Vector3, Euler } from 'three';
+import { Mesh, } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
 import { Module } from '../App';
@@ -140,7 +140,7 @@ function Shape(props: ShapeProps) {
           <animated.meshStandardMaterial color={springs.color} />
           {controlsVisible ? (
             props.module.type === 'instrument' ? (
-              <ControlsInstrument instrument={props.module.instrument}/>
+              <ControlsInstrument instrument={props.module.instrument} />
             ) : props.module.type === 'datasource' ? (
               <ControlsDatasource />
             ) : null

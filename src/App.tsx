@@ -81,7 +81,7 @@ function App() {
 
   const handleStart = () => {
     transport.start();
-  }
+  };
 
   // JSX
   return (

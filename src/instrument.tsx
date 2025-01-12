@@ -38,6 +38,10 @@ export class Instrument {
   sequenceEvents: string[];
   sequenceSubdivision: string;
   noteDuration: string;
+  distortion: Tone.Distortion;
+  distortionLevel: number;
+  reverb: Tone.Reverb;
+  reverbDecay: number;
   isPlaying: boolean;
   constructor() {
     // create synthesizer and connect to main output (speakers)
@@ -46,15 +50,23 @@ export class Instrument {
     this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
     this.sequenceSubdivision = '8n';
     this.noteDuration = '16n';
+    this.distortionLevel = 0.4;
+    this.distortion = new Tone.Distortion(this.distortionLevel).toDestination();
+    this.reverbDecay = 0.3;
+    this.reverb = new Tone.Reverb(this.reverbDecay);
     this.isPlaying = false;
     this.createSequence();
   }
 
   /** create the tone sequence on this instrument from a list of note events, e.g. ['D4', 'C3'],
    * and a tempo (subdivision), e.g. '8n' for eigth notes. both arguments optional (set undefined to not change)
-  */
-  createSequence(events: string[] = this.sequenceEvents, subdivision: string = this.sequenceSubdivision) {
-    console.log('setting sequence ' + events + ' with tempo (subdivision): ' + subdivision)
+   */
+  createSequence(
+    events: string[] = this.sequenceEvents,
+    subdivision: string = this.sequenceSubdivision
+  ) {
+    console.log('setting sequence with tempo ' + subdivision + ':');
+    console.log(events);
     this.sequence = new Tone.Sequence(
       (time, note) => {
         this.synth.triggerAttackRelease(note, this.noteDuration, time);
@@ -85,7 +97,7 @@ export class Instrument {
   }
 
   setSequenceTempo(tempo: string) {
-    console.log('setting sequence tempo to: ' + tempo)
+    console.log('setting sequence tempo to: ' + tempo);
     this.sequenceSubdivision = tempo;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, this.sequenceSubdivision);
@@ -93,11 +105,37 @@ export class Instrument {
   }
 
   setNoteDuration(duration: string) {
-    console.log('setting sequence tempo to: ' + duration)
+    console.log('setting sequence tempo to: ' + duration);
     this.noteDuration = duration;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, undefined);
     this.sequence?.start();
+  }
+
+  connectDistortion() {
+    this.synth.connect(this.distortion);
+  }
+
+  disconnectDistortion() {
+    this.synth.disconnect(this.distortion);
+  }
+
+  setDistortionLevel(level: number) {
+    this.distortionLevel = level;
+    this.distortion.set({ distortion: this.distortionLevel });
+  }
+
+  connectReverb() {
+    this.synth.connect(this.reverb);
+  }
+
+  disconnectReverb() {
+    this.synth.disconnect(this.reverb);
+  }
+
+  setReverbDecay(decay: number) {
+    this.reverbDecay = decay;
+    this.reverb.set({ decay: this.reverbDecay });
   }
 }
 
