@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import Shape from './components/Shape.tsx';
-import { Instrument } from './instrument.tsx';
+import { Instrument, transport } from './instrument.tsx';
 import { Datasource } from './datasource.tsx';
 
 // A Module can be an instrument, an online data source (API) or another trigger,
@@ -79,9 +79,14 @@ function App() {
     createShapes();
   }, []);
 
+  const handleStart = () => {
+    transport.start();
+  }
+
   // JSX
   return (
     <>
+      <button onClick={handleStart}>start</button>
       <span onContextMenu={(e) => e.nativeEvent.preventDefault()}>
         <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
           <Environment />

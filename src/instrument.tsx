@@ -37,6 +37,7 @@ export class Instrument {
   sequence: Tone.Sequence | null;
   sequenceEvents: string[];
   sequenceSubdivision: string;
+  noteDuration: string;
   isPlaying: boolean;
   constructor() {
     // create synthesizer and connect to main output (speakers)
@@ -44,6 +45,7 @@ export class Instrument {
     this.sequence = null;
     this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
     this.sequenceSubdivision = '8n';
+    this.noteDuration = '16n';
     this.isPlaying = false;
     this.createSequence();
   }
@@ -55,7 +57,7 @@ export class Instrument {
     console.log('setting sequence ' + events + ' with tempo (subdivision): ' + subdivision)
     this.sequence = new Tone.Sequence(
       (time, note) => {
-        this.synth.triggerAttackRelease(note, '16n', time);
+        this.synth.triggerAttackRelease(note, this.noteDuration, time);
       },
       events,
       subdivision
@@ -87,6 +89,14 @@ export class Instrument {
     this.sequenceSubdivision = tempo;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, this.sequenceSubdivision);
+    this.sequence?.start();
+  }
+
+  setNoteDuration(duration: string) {
+    console.log('setting sequence tempo to: ' + duration)
+    this.noteDuration = duration;
+    this.sequence?.stop(); // todo: start at same note? check global sync
+    this.createSequence(undefined, undefined);
     this.sequence?.start();
   }
 }
