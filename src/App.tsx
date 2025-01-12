@@ -26,7 +26,7 @@ export class Module {
     this.instrument = instrument;
     this.datasource = datasource;
     switch (type) {
-      case 'source':
+      case 'datasource':
         this.color = 'royalblue';
         break;
       case 'trigger':
@@ -51,8 +51,8 @@ function App() {
   // "Menu items" (i.e. one static instance of each module that can be cloned
   //  and activated by dragging it into the interface area)
   function createShapes() {
-    const source = new Module(
-      'source',
+    const datasource = new Module(
+      'datasource',
       new Vector3(-3, 6, 0),
       undefined,
       new Datasource()
@@ -69,11 +69,11 @@ function App() {
       new Instrument(),
       undefined
     );
-    setModules([source, trigger, instrument]);
+    setModules([datasource, trigger, instrument]);
     // todo: remove
     const yesterday = new Date(Date.now());
     yesterday.setDate(yesterday.getDate() - 1);
-    source.datasource?.getFullDay(yesterday);
+    datasource.datasource?.getFullDay(yesterday);
   }
   useEffect(() => {
     createShapes();

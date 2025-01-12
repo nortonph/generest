@@ -4,14 +4,14 @@
 import './Controls.css';
 import { Html } from '@react-three/drei';
 
-function Controls() {
+function ControlsDatasource() {
   return (
-    <Html>
+    <Html className='controlsHtml'>
       <div className='controls'>
-        <h1>:D</h1>
+        <p>API</p>
       </div>
     </Html>
   );
 }
 
-export default Controls;
+export default ControlsDatasource;

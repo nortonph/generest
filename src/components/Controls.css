@@ -1,8 +1,12 @@
 .controls {
-  background-color: aquamarine;
-  pointer-events: none;
+  background-color:#0f0f0f;
+  color: antiquewhite;
+  /* pointer-events: none; */
+  padding: 1rem 1rem;
+  margin: 0;
+  width: 250px;
 }
-
-h1 {
-  pointer-events: none;
+.controlsHtml {
+  top: -150px;
+  left: -150px;
 }
