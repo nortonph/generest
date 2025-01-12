@@ -5,20 +5,27 @@
 import './Shape.css';
 import { useCallback, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Mesh, } from 'three';
+import { Mesh } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
-import { Module } from '../App';
+import { Module, Connection } from '../App';
 import ControlsInstrument from './ControlsInstrument';
 import ControlsDatasource from './ControlsDatasource';
-import { transport } from '../instrument';
+import { Instrument, transport } from '../instrument';
+import { Datasource } from '../datasource';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
   module: Module;
   modules: Module[]; // state of App() containing all Modules
   setModules: React.Dispatch<React.SetStateAction<Module[]>>;
-  key: number; // for react component; could change during object lifetime?
+  connections: Connection[]; // state of App() containing all Connections
+  setConnections: React.Dispatch<React.SetStateAction<Connection[]>>;
+  hotConnection: Module | undefined; // containing module that has been selected for connection (if any)
+  setHotConnection: React.Dispatch<
+    React.SetStateAction<Module | undefined>
+  >;
+  key: number; // for react component; could change during object lifetime
 }
 
 function Shape(props: ShapeProps) {
@@ -26,6 +33,7 @@ function Shape(props: ShapeProps) {
   // from r3f docs - "using with typescript" about null!:
   // "The exclamation mark is a non-null assertion that will let TS know that ref.current is defined when we access it in effects."
   const meshRef = useRef<Mesh>(null!);
+  props.module.meshRef = meshRef;
 
   // States and Refs
   const state = useThree();
@@ -59,15 +67,38 @@ function Shape(props: ShapeProps) {
 
   // Mouse Interface
   const handleLeftClick = () => {
-    console.log(meshRef.current);
     if (expanded) {
       switch (props.module.type) {
         case 'instrument':
           console.log('Clicked on instrument (not implemented)');
           break;
         case 'trigger':
-          console.log('toggling transport');
-          transport.toggle(); // todo: remove
+          console.log('Clicked a trigger (not implemented)');
+          break;
+      }
+    } else {
+      // not expanded
+      switch (props.module.type) {
+        case 'instrument':
+          console.log('Clicked an instrument for connection');
+          // if a module has been selected for connection previously, it will be in hotConnection
+          if (props.hotConnection) {
+            console.log('connection is hot, connection these two: ');
+            console.log(props.hotConnection, props.module.instrument);
+            // make a new connection and add it to the list
+            props.setConnections([
+              ...props.connections,
+              new Connection(props.hotConnection, props.module),
+            ]);
+            props.setHotConnection(undefined);
+          }
+          break;
+        case 'trigger':
+          console.log('Clicked a trigger for connection (not implemented)');
+          break;
+        case 'datasource':
+          console.log('Clicked a datasource for connection');
+          props.setHotConnection(props.module);
           break;
       }
     }
@@ -140,7 +171,7 @@ function Shape(props: ShapeProps) {
           <animated.meshStandardMaterial color={springs.color} />
           {controlsVisible ? (
             props.module.type === 'instrument' ? (
-              <ControlsInstrument instrument={props.module.instrument} />
+              <ControlsInstrument instrument={props.module.instrument!} />
             ) : props.module.type === 'datasource' ? (
               <ControlsDatasource />
             ) : null
