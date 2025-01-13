@@ -7,12 +7,10 @@ import { useCallback, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Mesh } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls, Html } from '@react-three/drei';
+import { DragControls } from '@react-three/drei';
 import { Module, Connection } from '../App';
 import ControlsInstrument from './ControlsInstrument';
 import ControlsDatasource from './ControlsDatasource';
-import { Instrument, transport } from '../instrument';
-import { Datasource } from '../datasource';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
@@ -22,9 +20,7 @@ interface ShapeProps {
   connections: Connection[]; // state of App() containing all Connections
   setConnections: React.Dispatch<React.SetStateAction<Connection[]>>;
   hotConnection: Module | undefined; // containing module that has been selected for connection (if any)
-  setHotConnection: React.Dispatch<
-    React.SetStateAction<Module | undefined>
-  >;
+  setHotConnection: React.Dispatch<React.SetStateAction<Module | undefined>>;
   key: number; // for react component; could change during object lifetime
 }
 
@@ -36,7 +32,7 @@ function Shape(props: ShapeProps) {
   props.module.meshRef = meshRef;
 
   // States and Refs
-  const state = useThree();
+  // const state = useThree();
   const [active, setActive] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(false);
   const rotationY = useRef(0);

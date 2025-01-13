@@ -138,11 +138,3 @@ export class Instrument {
     this.reverb.set({ decay: this.reverbDecay });
   }
 }
-
-// See: https://tonejs.github.io/docs/15.0.4/classes/Context.html#latencyHint
-// // prioritize sustained playback
-// const context = new Tone.Context({ latencyHint: "playback" });
-// // set this context as the global Context
-// Tone.setContext(context);
-// // the global context is gettable with Tone.getContext()
-// console.log(Tone.getContext().latencyHint);

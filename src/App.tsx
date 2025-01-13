@@ -1,3 +1,25 @@
+/** generest
+ * generative music playground using public APIs as input
+ *
+ * Solo project for codeworks
+ * Philipp Norton, 2025
+ *
+ * Proposal:
+ * Transform publicly available data into generative music. Generest allows you to make data audible by
+ * selecting time-series data from public RESTful web APIs to drive and modulate pre-configured synthesized
+ * instruments running in your browser. Data will be discretized to harmonic scales and rhythmic time signatures
+ * to bring about a musical quality that still maps to real-life events/measurements. The input could range
+ * from sensor data like the traffic volume of a city or the water level of a river to stock prices and
+ * social media messages.
+ *
+ * Not fully implemented yet:
+ * - data fetching
+ * - sequence generation from data
+ * - visualization of module connections
+ *
+ * Guaranteed 100% AI free :)
+ */
+
 import './App.css';
 import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
@@ -10,7 +32,7 @@ import { Datasource } from './datasource.tsx';
 // A Module can be an instrument, an online data source (API) or another trigger,
 // each represented by a 3d shape in the interface.
 export class Module {
-  // todo: put this in a different file?
+  // todo: put classes in a different file?
   type: string;
   color: string;
   position: Vector3;
