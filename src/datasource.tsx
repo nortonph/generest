@@ -12,7 +12,7 @@ export class Datasource {
     } else {
       // use default API url (Newcastle Urban Observatory) if optional url was not passed
       this.url = {
-        baseUrl: 'https://newcastle.urbanobservatory.ac.uk/api/v1.1/sensors/',
+        baseUrl: 'http://localhost:3000/api/nuo/api/v1.1/sensors/',
         pathEnd: '/data/json/',
       };
     }
@@ -59,24 +59,24 @@ export class Datasource {
 
     // fetch data
     //todo: fetch from own back-end
-    // try {
-    //   console.log('trying to fetch with query url: ' + queryUrl);
-    //   const response = await fetch(queryUrl, {
-    //     mode: 'cors',
-    //     method: 'GET',
-    //     headers: {
-    //       'content-type': 'application/json',
-    //     },
-    //   });
-    //   if (!response.ok) {
-    //     throw new Error(`Response status: ${response.status}`);
-    //   }
-    //   const json = await response.json();
-    //   console.log('Hurray: fetched data from ' + queryUrl);
-    //   console.log(json);
-    // } catch (error) {
-    //   console.log('ERROR: problem fetching data from API - ', error);
-    // }
+    try {
+      console.log('trying to fetch with query url: ' + queryUrl);
+      const response = await fetch(queryUrl, {
+        mode: 'cors',
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      console.log('Hurray: fetched data from ' + queryUrl);
+      console.log(json);
+    } catch (error) {
+      console.log('ERROR: problem fetching data from API - ', error);
+    }
   }
 
   /** Private method to get formatted day (YYYYMMDD) */
