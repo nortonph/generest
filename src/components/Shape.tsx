@@ -158,8 +158,10 @@ function Shape(props: ShapeProps) {
         onDragStart={() => {
           cloneShape();
         }}
-        onDragEnd={() => {
+        onDrag={() => {
           updatePosition();
+        }}
+        onDragEnd={() => {
         }}
       >
         {/* NOTE TO LEGACY TEAM: if animated.mesh (i.e. the cube) has a direct parent other than DragControls, worldPos might not be correctly calculated! */}
