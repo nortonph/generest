@@ -5,23 +5,22 @@
 import './Shape.css';
 import { useCallback, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh } from 'three';
+import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
-import { DragControls } from '@react-three/drei';
-import { Module, Connection } from '../App';
+import { DragControls, Html } from '@react-three/drei';
+import { Module, ModuleObj, Connection } from '../App';
 import ControlsInstrument from './ControlsInstrument';
 import ControlsDatasource from './ControlsDatasource';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
-  module: Module;
-  modules: Module[]; // state of App() containing all Modules
-  setModules: React.Dispatch<React.SetStateAction<Module[]>>;
-  connections: Connection[]; // state of App() containing all Connections
-  setConnections: React.Dispatch<React.SetStateAction<Connection[]>>;
-  hotConnection: Module | undefined; // containing module that has been selected for connection (if any)
-  setHotConnection: React.Dispatch<React.SetStateAction<Module | undefined>>;
-  key: number; // for react component; could change during object lifetime
+  moduleObj: ModuleObj;
+  addModule: (newModule: Module) => void;
+  updateModule: (moduleObj: ModuleObj) => void;
+  addConnection: (newConnection: Connection) => void;
+  hotConnection: ModuleObj | undefined; // containing module that has been selected for connection (if any)
+  setHotConnection: React.Dispatch<React.SetStateAction<ModuleObj | undefined>>;
+  key: number;
 }
 
 function Shape(props: ShapeProps) {
@@ -29,25 +28,21 @@ function Shape(props: ShapeProps) {
   // from r3f docs - "using with typescript" about null!:
   // "The exclamation mark is a non-null assertion that will let TS know that ref.current is defined when we access it in effects."
   const meshRef = useRef<Mesh>(null!);
-  props.module.meshRef = meshRef;
+  props.moduleObj.module.meshRef = meshRef;
 
   // States and Refs
   // const state = useThree();
   const [active, setActive] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(false);
-  const rotationY = useRef(0);
+  const rotationY = useRef(0); // this is probably not needed (set on meshRef directly in useFrame)
   const rotating = useRef(true);
   let expanded = false;
-
-  // useEffect(() => {
-  //   setNonExpandedPosition(props.module.position);
-  // }, [])
 
   // React Spring properties (Imperative API)
   // - easing animations for changes of color, size etc.
   const [springs, api] = useSpring(() => ({
     scale: 1,
-    color: props.module.color,
+    color: props.moduleObj.module.color,
     // set different durations based on what is being animated
     config: (key) => {
       switch (key) {
@@ -64,7 +59,7 @@ function Shape(props: ShapeProps) {
   // Mouse Interface
   const handleLeftClick = () => {
     if (expanded) {
-      switch (props.module.type) {
+      switch (props.moduleObj.module.type) {
         case 'instrument':
           console.log('Clicked on instrument (not implemented)');
           break;
@@ -74,18 +69,20 @@ function Shape(props: ShapeProps) {
       }
     } else {
       // not expanded
-      switch (props.module.type) {
+      switch (props.moduleObj.module.type) {
         case 'instrument':
           console.log('Clicked an instrument for connection');
           // if a module has been selected for connection previously, it will be in hotConnection
           if (props.hotConnection) {
             console.log('connection is hot, connection these two: ');
-            console.log(props.hotConnection, props.module.instrument);
+            console.log(
+              props.hotConnection.module,
+              props.moduleObj.module.instrument
+            );
             // make a new connection and add it to the list
-            props.setConnections([
-              ...props.connections,
-              new Connection(props.hotConnection, props.module),
-            ]);
+            props.addConnection(
+              new Connection(props.hotConnection.id, props.moduleObj.id)
+            );
             props.setHotConnection(undefined);
           }
           break;
@@ -94,7 +91,7 @@ function Shape(props: ShapeProps) {
           break;
         case 'datasource':
           console.log('Clicked a datasource for connection');
-          props.setHotConnection(props.module);
+          props.setHotConnection(props.moduleObj);
           break;
       }
     }
@@ -122,12 +119,13 @@ function Shape(props: ShapeProps) {
   const handlePointerOut = () => {
     // stops hovering
     api.start({
-      color: props.module.color,
+      color: props.moduleObj.module.color,
     });
   };
 
   // Executes on each frame render - CAREFUL: https://r3f.docs.pmnd.rs/api/hooks#useframe
   useFrame(() => {
+    // update shape rotation
     rotationY.current = rotationY.current - 0.02;
     if (rotating.current) {
       meshRef.current.rotation.y = rotationY.current;
@@ -138,11 +136,18 @@ function Shape(props: ShapeProps) {
     // when dragging an inactive Shape ("menu item"), set it active and create a new inactive one in its place
     if (!active) {
       setActive(true);
-      props.setModules([
-        ...props.modules,
-        props.module.clone(props.module.position),
-      ]);
+      props.addModule(
+        props.moduleObj.module.clone(props.moduleObj.module.position)
+      );
     }
+  }
+
+  function updatePosition() {
+    // update the absolute position of the shape in the scene (position of DragControls, which is the parent, plus initial position)
+    props.moduleObj.module.worldPos = meshRef
+      .current!.parent!.getWorldPosition(new Vector3())
+      .add(props.moduleObj.module.position);
+    props.updateModule(props.moduleObj);
   }
 
   // JSX
@@ -153,10 +158,14 @@ function Shape(props: ShapeProps) {
         onDragStart={() => {
           cloneShape();
         }}
+        onDragEnd={() => {
+          updatePosition();
+        }}
       >
+        {/* NOTE TO LEGACY TEAM: if animated.mesh (i.e. the cube) has a direct parent other than DragControls, worldPos might not be correctly calculated! */}
         <animated.mesh
           ref={meshRef}
-          position={props.module.position}
+          position={props.moduleObj.module.position}
           scale={springs.scale}
           onPointerOver={handlePointerOver}
           onPointerOut={handlePointerOut}
@@ -166,15 +175,20 @@ function Shape(props: ShapeProps) {
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />
           {controlsVisible ? (
-            props.module.type === 'instrument' ? (
-              <ControlsInstrument instrument={props.module.instrument!} />
-            ) : props.module.type === 'datasource' ? (
+            props.moduleObj.module.type === 'instrument' ? (
+              <ControlsInstrument
+                instrument={props.moduleObj.module.instrument!}
+              />
+            ) : props.moduleObj.module.type === 'datasource' ? (
               <ControlsDatasource />
             ) : null
           ) : null}
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
           {/* <Html className='debug'>
             <p>Render ID {Math.random()}</p>
+            <p>worldPosX {Math.round(props.moduleObj.module.worldPos.x! * 10)/10}</p>
+            <p>worldPosY {Math.round(props.moduleObj.module.worldPos.y! * 10)/10}</p>
+            <p>worldPosZ {Math.round(props.moduleObj.module.worldPos.z! * 10)/10}</p>
           </Html> */}
         </animated.mesh>
       </DragControls>
