@@ -66,7 +66,7 @@ export class Instrument {
     (this.octave = 4), (this.rangeOct = 2), (this.sequence = null);
     this.notes = [];
     this.dataArray = [];
-    this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
+    this.sequenceEvents = [];
     this.sequenceSubdivision = '8n';
     this.nNotesInSequence = 32;
     this.noteDuration = '16n';
@@ -194,7 +194,7 @@ export class Instrument {
     this.sequenceSubdivision = tempo;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, this.sequenceSubdivision);
-    // this.sequence?.start();
+    this.sequence?.start();
   }
 
   setNoteDuration(duration: string) {
@@ -202,7 +202,7 @@ export class Instrument {
     this.noteDuration = duration;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, undefined);
-    // this.sequence?.start();
+    this.sequence?.start();
   }
 
   setOctave(octave: number) {
@@ -211,7 +211,7 @@ export class Instrument {
     this.getNotesFromData();
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, undefined);
-    // this.sequence?.start();
+    this.sequence?.start();
   }
 
   setOctaveRange(rangeOct: number) {
@@ -228,7 +228,7 @@ export class Instrument {
     this.getNotesFromData();
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, undefined);
-    // this.sequence?.start();
+    this.sequence?.start();
   }
 
   // effects ###############################################

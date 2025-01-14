@@ -70,7 +70,11 @@ export class Module {
     }
   }
   clone(position: Vector3) {
-    return new Module(this.type, position, this.instrument, this.datasource);
+    if (this.type === 'datasource') {
+      return new Module(this.type, position, undefined, this.datasource);
+    } else if (this.type === 'instrument') {
+      return new Module(this.type, position, new Instrument(), undefined);
+    }
   }
 }
 
@@ -147,6 +151,10 @@ function App() {
   // start main time component of Tone.js
   const handleStart = () => {
     transport.start();
+    // loop through instruments and stop them
+    modules.forEach((m) => {
+      if (m.module.type === 'instrument') m.module.instrument?.playSequence();
+    });
   };
   const handleStop = () => {
     transport.stop();
