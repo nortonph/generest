@@ -85,7 +85,8 @@ export class Instrument {
     for (let oct in octaves) {
       this.notes = this.scale.map((note) => note + oct);
     }
-    console.log('created available notes: ' + this.notes);
+    console.log('created available notes: ');
+    console.log(this.notes);
   }
 
   /** generate note events from data points by mapping the range of data to the available notes */
@@ -116,6 +117,8 @@ export class Instrument {
       // add the corresponding note to events
       events.push(this.notes[iClosestBin]);
     }
+    console.log('generated note events from data: ');
+    console.log(events);
     return events;
   }
 
@@ -173,6 +176,7 @@ export class Instrument {
     this.sequence?.start();
   }
 
+  // effects ###############################################
   connectDistortion() {
     this.synth.connect(this.distortion);
   }

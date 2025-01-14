@@ -30,7 +30,7 @@ function Shape(props: ShapeProps) {
   const meshRef = useRef<Mesh>(null!);
   props.moduleObj.module.meshRef = meshRef;
 
-  // States and Refs
+  // States and Refs ###############################################
   // const state = useThree();
   const [active, setActive] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(false);
@@ -56,7 +56,7 @@ function Shape(props: ShapeProps) {
     },
   }));
 
-  // Mouse Interface
+  // Mouse Interface ###############################################
   const handleLeftClick = () => {
     if (expanded) {
       switch (props.moduleObj.module.type) {
@@ -132,6 +132,7 @@ function Shape(props: ShapeProps) {
     }
   });
 
+  // misc functions ###############################################
   function cloneShape() {
     // when dragging an inactive Shape ("menu item"), set it active and create a new inactive one in its place
     if (!active) {
@@ -150,7 +151,7 @@ function Shape(props: ShapeProps) {
     props.updateModule(props.moduleObj);
   }
 
-  // JSX
+  // JSX ###############################################
   return (
     <>
       {/* This wrapping tag enables drag-and-drop by left click on the shape */}

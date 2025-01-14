@@ -99,7 +99,7 @@ export interface ConnectionObj {
 }
 
 function App() {
-  // States
+  // States ###############################################
   const [modules, setModules] = useState<ModuleObj[]>([]);
   const [connections, setConnections] = useState<ConnectionObj[]>([]);
   // when the user clicks on a module to connect it to another, this state will be
@@ -147,6 +147,8 @@ function App() {
   const handleStart = () => {
     transport.start();
   };
+
+  // module & connection creation/update ###################################
 
   function addModule(newModule: Module): void {
     setModules((existingModules) => {
@@ -198,7 +200,7 @@ function App() {
     });
   }
 
-  // JSX
+  // JSX ###############################################
   return (
     <>
       <button onClick={handleStart}>start</button>
