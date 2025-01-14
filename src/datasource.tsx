@@ -4,9 +4,11 @@ export class Datasource {
   // final fetch call will be on (baseUrl + entity + pathEnd + [query parameters])
   url: { baseUrl: string; pathEnd: string };
   entity: string;
-  dataVariable: string;
+  dataVariable: string; // for Newcastle Urban Observatory this is the sensor type (e.g. 'Weather' or 'Walking')
+  rawDataFromApi: any; // holds raw (json) data pulled from API
+  numberArray: number[]; // holds the extracted numerical data to be used for instrument sequence generation
 
-  constructor(url?: { baseUrl: string; pathEnd: string }, entity?: string) {
+  constructor(url?: { baseUrl: string; pathEnd: string }, entity?: string, dataVariable?: string) {
     if (url && (url.baseUrl.length > 0 || url.pathEnd.length > 0)) {
       this.url = url;
     } else {
@@ -16,12 +18,9 @@ export class Datasource {
         pathEnd: '/data/json/',
       };
     }
-    if (entity) {
-      this.entity = entity;
-    } else {
-      this.entity = 'PER_PEOPLE_NCLPILGRIMSTMARKETLN_FROM_SOUTH_TO_NORTH';
-    }
-    this.dataVariable = '';
+    this.entity = entity ? entity:'PER_PEOPLE_NCLPILGRIMSTMARKETLN_FROM_SOUTH_TO_NORTH';
+    this.dataVariable = dataVariable ? dataVariable : 'Walking';
+    this.numberArray = [];
   }
 
   /** Set the middle part of the query url (sensor name in Newcastle Urban Observatory) */
@@ -58,7 +57,6 @@ export class Datasource {
     }
 
     // fetch data
-    //todo: fetch from own back-end
     try {
       console.log('trying to fetch with query url: ' + queryUrl);
       const response = await fetch(queryUrl, {
@@ -74,8 +72,23 @@ export class Datasource {
       const json = await response.json();
       console.log('Hurray: fetched data from ' + queryUrl);
       console.log(json);
+      this.rawDataFromApi = json;
     } catch (error) {
       console.log('ERROR: problem fetching data from API - ', error);
+    }
+    try {
+      this.extractNumberArrayFromRawData();
+    } catch (error) {
+      console.log('ERROR: problem extracting numberArray from raw data - ', error);
+    }
+  }
+
+  extractNumberArrayFromRawData() {
+    // todo: check for valid data
+    const sensorData = this.rawDataFromApi.sensors[0].data[this.dataVariable];
+    this.numberArray = [];
+    for (let idx in sensorData) {
+      this.numberArray.push(sensorData[idx]);
     }
   }
 
