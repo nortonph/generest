@@ -1,5 +1,5 @@
 import * as Tone from 'tone';
-const _ = require('lodash/core');
+import { range, min, max } from 'lodash';
 
 // IMPORTANT: Browsers will not play any audio until a user clicks something. (see docs)
 
@@ -46,7 +46,7 @@ export class Instrument {
   synth: Tone.Synth; // synthesizer
   scale: string[]; // musical scale (notes only)
   octave: number; // middle octave number
-  range: number; // range of octaves
+  rangeOct: number; // range of octaves
   notes: string[]; // list of playable notes (scale x octave)
   sequence: Tone.Sequence | null; // tone sequence
   sequenceEvents: string[]; // list of note+octave strings
@@ -61,7 +61,7 @@ export class Instrument {
     // create synthesizer and connect to main output (speakers)
     this.synth = new Tone.Synth().toDestination();
     this.scale = scales['Dminor'];
-    (this.octave = 4), (this.range = 2), (this.sequence = null);
+    (this.octave = 4), (this.rangeOct = 2), (this.sequence = null);
     this.notes = [];
     this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
     this.sequenceSubdivision = '8n';
@@ -78,7 +78,10 @@ export class Instrument {
   /** create the available notes from the scale and the octaves +/- range */
   createNotes() {
     // todo: check for valid range & octave
-    const octaves = _.range(this.octave - this.range, this.octave + this.range);
+    const octaves = range(
+      this.octave - this.rangeOct,
+      this.octave + this.rangeOct
+    );
     for (let oct in octaves) {
       this.notes = this.scale.map((note) => note + oct);
     }
@@ -87,15 +90,20 @@ export class Instrument {
 
   /** generate note events from data points by mapping the range of data to the available notes */
   getNotesFromData(numberArray: number[]) {
-    const min = _.min(numberArray);
-    const max = _.max(numberArray);
-    const range = max - min;
+    // todo: check for valid data and remove !s
+    const minData = min(numberArray)!;
+    const maxData = max(numberArray)!;
+    const rangeData = maxData - minData;
     // create array of evently spaced bins (n = available notes)
-    const binsize = range / this.notes.length;
-    const binCenters: number[] = _.range(min + binsize/2, max - binsize/2, binsize);
+    const binsize = rangeData / this.notes.length;
+    const binCenters: number[] = _.range(
+      minData + binsize / 2,
+      maxData - binsize / 2,
+      binsize
+    );
     // for each data point, find the closest bin and add the corresponding note
     let events: string[] = [];
-    let minDist = range;
+    let minDist = rangeData;
     let iClosestBin = 0;
     for (let num of numberArray) {
       // find the index of the binCenter closest to num
@@ -108,6 +116,7 @@ export class Instrument {
       // add the corresponding note to events
       events.push(this.notes[iClosestBin]);
     }
+    return events;
   }
 
   /** create the tone sequence on this instrument from a list of note events, e.g. ['D4', 'C3'],

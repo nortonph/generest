@@ -133,9 +133,9 @@ function App() {
     addModule(trigger);
     addModule(instrument);
     // todo: remove
-    // const yesterday = new Date(Date.now());
-    // yesterday.setDate(yesterday.getDate() - 1);
-    // datasource.datasource?.getFullDay(yesterday);
+    const yesterday = new Date(Date.now());
+    yesterday.setDate(yesterday.getDate() - 1);
+    datasource.datasource?.getFullDay(yesterday);
   }
 
   // create the "menu" shapes (ensure that this only runs once)
