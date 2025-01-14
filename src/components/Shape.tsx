@@ -147,8 +147,11 @@ function Shape(props: ShapeProps) {
       props.addConnection(newConnection);
       // connect datasource to instrument
       // todo: move this somewhere else (some method or function connectDatasourceToInstrument() ?)
-      const noteEvents = toModule.module.instrument?.getNotesFromData(fromModule.module.datasource?.numberArray!);
-      toModule.module.instrument?.createSequence(noteEvents);
+      const noteEvents = toModule.module.instrument?.getNotesFromData(
+        fromModule.module.datasource?.numberArray!
+      );
+      toModule.module.instrument?.setSequenceEvents(noteEvents!);
+      toModule.module.instrument?.createSequence();
       toModule.module.instrument?.playSequence();
       // reset hotConnection
       props.setHotConnection(undefined);
@@ -174,8 +177,7 @@ function Shape(props: ShapeProps) {
         onDrag={() => {
           updatePosition();
         }}
-        onDragEnd={() => {
-        }}
+        onDragEnd={() => {}}
       >
         {/* NOTE TO LEGACY TEAM: if animated.mesh (i.e. the cube) has a direct parent other than DragControls, worldPos might not be correctly calculated! */}
         <animated.mesh

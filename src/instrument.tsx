@@ -128,19 +128,23 @@ export class Instrument {
   /** create the tone sequence on this instrument from a list of note events, e.g. ['D4', 'C3'],
    * and a tempo (subdivision), e.g. '8n' for eigth notes. both arguments optional (set undefined to not change)
    */
-  createSequence(
-    events: string[] = this.sequenceEvents,
-    subdivision: string = this.sequenceSubdivision
-  ) {
-    console.log('setting sequence with tempo ' + subdivision + ':');
-    console.log(events);
+  createSequence(events?: string[], subdivision?: string) {
+    const tmpEvents = events ? events : this.sequenceEvents;
+    const tmpSubdivision = subdivision ? subdivision : this.sequenceSubdivision;
+    console.log('setting sequence with tempo ' + tmpSubdivision + ':');
+    console.log(tmpEvents);
     this.sequence = new Tone.Sequence(
       (time, note) => {
         this.synth.triggerAttackRelease(note, this.noteDuration, time);
       },
-      events,
-      subdivision
+      tmpEvents,
+      tmpSubdivision
     );
+  }
+
+  setSequenceEvents(events: string[]) {
+    // todo: check data validity
+    this.sequenceEvents = events;
   }
 
   playSequence() {
