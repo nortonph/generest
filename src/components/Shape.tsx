@@ -73,18 +73,7 @@ function Shape(props: ShapeProps) {
         case 'instrument':
           console.log('Clicked an instrument for connection');
           // if a module has been selected for connection previously, it will be in hotConnection
-          if (props.hotConnection) {
-            console.log('connection is hot, connection these two: ');
-            console.log(
-              props.hotConnection.module,
-              props.moduleObj.module.instrument
-            );
-            // make a new connection and add it to the list
-            props.addConnection(
-              new Connection(props.hotConnection.id, props.moduleObj.id)
-            );
-            props.setHotConnection(undefined);
-          }
+          createConnection();
           break;
         case 'trigger':
           console.log('Clicked a trigger for connection (not implemented)');
@@ -140,6 +129,22 @@ function Shape(props: ShapeProps) {
       props.addModule(
         props.moduleObj.module.clone(props.moduleObj.module.position)
       );
+    }
+  }
+
+  function createConnection() {
+    // if a module has been selected for connection previously, it will be in hotConnection
+    if (props.hotConnection) {
+      console.log('connection is hot, connection these two: ');
+      console.log(
+        props.hotConnection.module,
+        props.moduleObj.module.instrument
+      );
+      // make a new connection and add it to the list
+      props.addConnection(
+        new Connection(props.hotConnection.id, props.moduleObj.id)
+      );
+      props.setHotConnection(undefined);
     }
   }
 
