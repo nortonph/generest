@@ -108,6 +108,8 @@ export class Instrument {
     let minDist = rangeData;
     let iClosestBin = 0;
     for (let num of numberArray) {
+      // this keeps track of minimum distance to bin centers. reset to maximum possible distance (range of data)
+      minDist = rangeData;
       // find the index of the binCenter closest to num
       for (let i = 0; i < binCenters.length; i++) {
         if (Math.abs(binCenters[i] - num) < minDist) {
