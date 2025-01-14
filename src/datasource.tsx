@@ -76,6 +76,8 @@ export class Datasource {
     } catch (error) {
       console.log('ERROR: problem fetching data from API - ', error);
     }
+
+    // extract numbers from raw data
     try {
       this.extractNumberArrayFromRawData();
     } catch (error) {

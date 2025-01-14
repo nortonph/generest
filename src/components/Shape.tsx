@@ -140,10 +140,17 @@ function Shape(props: ShapeProps) {
         props.hotConnection.module,
         props.moduleObj.module.instrument
       );
-      // make a new connection and add it to the list
-      props.addConnection(
-        new Connection(props.hotConnection.id, props.moduleObj.id)
-      );
+      // create a new connection object and add it to the list
+      const fromModule = props.hotConnection;
+      const toModule = props.moduleObj;
+      const newConnection = new Connection(fromModule.id, toModule.id);
+      props.addConnection(newConnection);
+      // connect datasource to instrument
+      // todo: move this somewhere else (some method or function connectDatasourceToInstrument() ?)
+      const noteEvents = toModule.module.instrument?.getNotesFromData(fromModule.module.datasource?.numberArray!);
+      toModule.module.instrument?.createSequence(noteEvents);
+      toModule.module.instrument?.playSequence();
+      // reset hotConnection
       props.setHotConnection(undefined);
     }
   }

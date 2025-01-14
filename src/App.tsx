@@ -132,7 +132,7 @@ function App() {
     addModule(datasource);
     addModule(trigger);
     addModule(instrument);
-    // todo: remove
+    // todo: do this dynamically when interacting with the datasource controls
     const yesterday = new Date(Date.now());
     yesterday.setDate(yesterday.getDate() - 1);
     datasource.datasource?.getFullDay(yesterday);
