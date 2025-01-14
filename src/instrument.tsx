@@ -1,5 +1,5 @@
 import * as Tone from 'tone';
-import { range, min, max } from 'lodash';
+import { range, min, max, mean } from 'lodash';
 
 // IMPORTANT: Browsers will not play any audio until a user clicks something. (see docs)
 
@@ -51,6 +51,7 @@ export class Instrument {
   sequence: Tone.Sequence | null; // tone sequence
   sequenceEvents: string[]; // list of note+octave strings
   sequenceSubdivision: string; // durational interval btw. notes in sequence
+  nNotesInSequence: number; // todo: calculate automatically from sequenceSubdivision, i.e. tempo
   noteDuration: string; // how long note sounds
   distortion: Tone.Distortion;
   distortionLevel: number;
@@ -65,6 +66,7 @@ export class Instrument {
     this.notes = [];
     this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
     this.sequenceSubdivision = '8n';
+    this.nNotesInSequence = 32;
     this.noteDuration = '16n';
     this.distortionLevel = 0.4;
     this.distortion = new Tone.Distortion(this.distortionLevel).toDestination();
@@ -92,6 +94,7 @@ export class Instrument {
   /** generate note events from data points by mapping the range of data to the available notes */
   getNotesFromData(numberArray: number[]) {
     // todo: check for valid data and remove !s
+    const nNumbers = numberArray.length;
     const minData = min(numberArray)!;
     const maxData = max(numberArray)!;
     const rangeData = maxData - minData;
@@ -103,18 +106,23 @@ export class Instrument {
       maxData - binsize / 2,
       binsize
     );
-    // for each data point, find the closest bin and add the corresponding note
+    // for each sequence step, average data points around that step, find the closest bin and add the corresponding note
     let events: string[] = [];
     let minDist = rangeData;
     let iClosestBin = 0;
-    for (let num of numberArray) {
+    // loop over number of notes in sequence
+    for (let iNote = 0; iNote < this.nNotesInSequence; iNote++) {
+      // get the indices of data points to average
+      const firstNumIdx = Math.round((iNote / this.nNotesInSequence) * (nNumbers - 1)); // note: -1 might not be needed
+      const lastNumIdx = Math.round(((iNote + 1) / this.nNotesInSequence) * (nNumbers - 1));
+      const numAverageForNote = mean(numberArray.slice(firstNumIdx, lastNumIdx));
       // this keeps track of minimum distance to bin centers. reset to maximum possible distance (range of data)
       minDist = rangeData;
       // find the index of the binCenter closest to num
-      for (let i = 0; i < binCenters.length; i++) {
-        if (Math.abs(binCenters[i] - num) < minDist) {
-          minDist = Math.abs(binCenters[i] - num);
-          iClosestBin = i;
+      for (let iBin = 0; iBin < binCenters.length; iBin++) {
+        if (Math.abs(binCenters[iBin] - numAverageForNote) < minDist) {
+          minDist = Math.abs(binCenters[iBin] - numAverageForNote);
+          iClosestBin = iBin;
         }
       }
       // add the corresponding note to events
