@@ -144,8 +144,16 @@ function App() {
     console.log('createShapes called');
   }
 
+  // start main time component of Tone.js
   const handleStart = () => {
     transport.start();
+  };
+  const handleStop = () => {
+    transport.stop();
+    // loop through instruments and stop them
+    modules.forEach((m) => {
+      if (m.module.type === 'instrument') m.module.instrument?.stopSequence();
+    });
   };
 
   // module & connection creation/update ###################################
@@ -203,8 +211,9 @@ function App() {
   // JSX ###############################################
   return (
     <>
-      <button onClick={handleStart}>start</button>
       <span onContextMenu={(e) => e.nativeEvent.preventDefault()}>
+      <button onClick={handleStart}>start</button>
+      <button onClick={handleStop}>stop</button>
         <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
           <Environment />
           {modules.length ? (

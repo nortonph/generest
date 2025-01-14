@@ -35,7 +35,7 @@ export const transport = Transport.getInstance();
 // musical scales
 // to generate arbitrary scales, maybe look at Tone.Frequency().harmonize():
 // https://tonejs.github.io/docs/15.0.4/classes/FrequencyClass.html#harmonize
-const scales = {
+export const scales = {
   Dminor: ['D', 'E', 'F', 'G', 'A', 'B', 'C'],
   Dpenta: ['D', 'F', 'G', 'A', 'C'],
   Fmajor: ['F', 'G', 'A', 'Bb', 'C', 'D', 'E'],
@@ -48,6 +48,7 @@ export class Instrument {
   octave: number; // middle octave number
   rangeOct: number; // range of octaves
   notes: string[]; // list of playable notes (scale x octave)
+  dataArray: number[]; // copy of numberArray from datasource
   sequence: Tone.Sequence | null; // tone sequence
   sequenceEvents: string[]; // list of note+octave strings
   sequenceSubdivision: string; // durational interval btw. notes in sequence
@@ -64,6 +65,7 @@ export class Instrument {
     this.scale = scales['Dminor'];
     (this.octave = 4), (this.rangeOct = 2), (this.sequence = null);
     this.notes = [];
+    this.dataArray = [];
     this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
     this.sequenceSubdivision = '8n';
     this.nNotesInSequence = 32;
@@ -84,19 +86,25 @@ export class Instrument {
       this.octave - this.rangeOct,
       this.octave + this.rangeOct + 1
     );
+    console.log('creating notes from octave ', this.octave, ' & range ', this.rangeOct, ': ', octaves)
+    this.notes = [];
     for (let oct of octaves) {
       this.notes = [...this.notes, ...this.scale.map((note) => note + oct)];
     }
-    console.log('created available notes: ');
+    console.log('...created available notes: ');
     console.log(this.notes);
   }
 
   /** generate note events from data points by mapping the range of data to the available notes */
-  getNotesFromData(numberArray: number[]) {
+  getNotesFromData(numberArray?: number[]) {
+    if (numberArray) {
+      this.dataArray = numberArray;
+    }
+    const data = this.dataArray;
     // todo: check for valid data and remove !s
-    const nNumbers = numberArray.length;
-    const minData = min(numberArray)!;
-    const maxData = max(numberArray)!;
+    const nNumbers = data.length;
+    const minData = min(data)!;
+    const maxData = max(data)!;
     const rangeData = maxData - minData;
     console.log('min, max range: ', minData, maxData, rangeData);
     // create array of evently spaced bins (n = available notes)
@@ -115,7 +123,7 @@ export class Instrument {
       // get the indices of data points to average
       const firstNumIdx = Math.round((iNote / this.nNotesInSequence) * (nNumbers - 1)); // note: -1 might not be needed
       const lastNumIdx = Math.round(((iNote + 1) / this.nNotesInSequence) * (nNumbers - 1));
-      const numAverageForNote = mean(numberArray.slice(firstNumIdx, lastNumIdx));
+      const numAverageForNote = mean(data.slice(firstNumIdx, lastNumIdx));
       // this keeps track of minimum distance to bin centers. reset to maximum possible distance (range of data)
       minDist = rangeData;
       // find the index of the binCenter closest to num
@@ -175,12 +183,18 @@ export class Instrument {
     }
   }
 
+  // parameter setters for instrument controls #################################
+  // todo: check input validity for all these
+  setScale(scaleName: keyof typeof scales) {
+    this.scale = scales[scaleName];
+  }
+
   setSequenceTempo(tempo: string) {
     console.log('setting sequence tempo to: ' + tempo);
     this.sequenceSubdivision = tempo;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, this.sequenceSubdivision);
-    this.sequence?.start();
+    // this.sequence?.start();
   }
 
   setNoteDuration(duration: string) {
@@ -188,7 +202,33 @@ export class Instrument {
     this.noteDuration = duration;
     this.sequence?.stop(); // todo: start at same note? check global sync
     this.createSequence(undefined, undefined);
+    // this.sequence?.start();
+  }
+
+  setOctave(octave: number) {
+    this.octave = octave;
+    this.createNotes();
+    this.getNotesFromData();
+    this.sequence?.stop(); // todo: start at same note? check global sync
+    this.createSequence(undefined, undefined);
+    // this.sequence?.start();
+  }
+
+  setOctaveRange(rangeOct: number) {
+    this.rangeOct = rangeOct;
+    this.createNotes();
+    this.getNotesFromData();
+    this.sequence?.stop(); // todo: start at same note? check global sync
+    this.createSequence(undefined, undefined);
     this.sequence?.start();
+  }
+
+  setNNotesInSequence(nNotesInSequence: number) {
+    this.nNotesInSequence = nNotesInSequence;
+    this.getNotesFromData();
+    this.sequence?.stop(); // todo: start at same note? check global sync
+    this.createSequence(undefined, undefined);
+    // this.sequence?.start();
   }
 
   // effects ###############################################
