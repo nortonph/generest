@@ -95,6 +95,7 @@ export class Instrument {
     const minData = min(numberArray)!;
     const maxData = max(numberArray)!;
     const rangeData = maxData - minData;
+    console.log('min, max range: ', minData, maxData, rangeData);
     // create array of evently spaced bins (n = available notes)
     const binsize = rangeData / this.notes.length;
     const binCenters: number[] = range(

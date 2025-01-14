@@ -8,7 +8,11 @@ export class Datasource {
   rawDataFromApi: any; // holds raw (json) data pulled from API
   numberArray: number[]; // holds the extracted numerical data to be used for instrument sequence generation
 
-  constructor(url?: { baseUrl: string; pathEnd: string }, entity?: string, dataVariable?: string) {
+  constructor(
+    url?: { baseUrl: string; pathEnd: string },
+    entity?: string,
+    dataVariable?: string
+  ) {
     if (url && (url.baseUrl.length > 0 || url.pathEnd.length > 0)) {
       this.url = url;
     } else {
@@ -18,7 +22,9 @@ export class Datasource {
         pathEnd: '/data/json/',
       };
     }
-    this.entity = entity ? entity:'PER_PEOPLE_NCLPILGRIMSTMARKETLN_FROM_SOUTH_TO_NORTH';
+    this.entity = entity
+      ? entity
+      : 'PER_PEOPLE_NCLPILGRIMSTMARKETLN_FROM_SOUTH_TO_NORTH';
     this.dataVariable = dataVariable ? dataVariable : 'Walking';
     this.numberArray = [];
   }
@@ -74,14 +80,14 @@ export class Datasource {
       console.log(json);
       this.rawDataFromApi = json;
     } catch (error) {
-      console.log('ERROR: problem fetching data from API - ', error);
+      console.log('ERROR: problem fetching data from API: ', error);
     }
 
     // extract numbers from raw data
     try {
       this.extractNumberArrayFromRawData();
     } catch (error) {
-      console.log('ERROR: problem extracting numberArray from raw data - ', error);
+      console.log('ERROR: problem extracting numberArray from data: ', error);
     }
   }
 
@@ -90,8 +96,10 @@ export class Datasource {
     const sensorData = this.rawDataFromApi.sensors[0].data[this.dataVariable];
     this.numberArray = [];
     for (let idx in sensorData) {
-      this.numberArray.push(sensorData[idx]);
+      this.numberArray.push(sensorData[idx].Value);
     }
+    console.log('sensorData: ', sensorData);
+    console.log('numberArray: ', this.numberArray);
   }
 
   /** Private method to get formatted day (YYYYMMDD) */
