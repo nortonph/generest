@@ -1,4 +1,5 @@
 import * as Tone from 'tone';
+const _ = require('lodash/core');
 
 // IMPORTANT: Browsers will not play any audio until a user clicks something. (see docs)
 
@@ -31,13 +32,26 @@ class Transport {
 }
 export const transport = Transport.getInstance();
 
+// musical scales
+// to generate arbitrary scales, maybe look at Tone.Frequency().harmonize():
+// https://tonejs.github.io/docs/15.0.4/classes/FrequencyClass.html#harmonize
+const scales = {
+  Dminor: ['D', 'E', 'F', 'G', 'A', 'B', 'C'],
+  Dpenta: ['D', 'F', 'G', 'A', 'C'],
+  Fmajor: ['F', 'G', 'A', 'Bb', 'C', 'D', 'E'],
+};
+
 /** Instrument to be used as a Module. generates sound from input using Tone.js */
 export class Instrument {
-  synth: Tone.Synth;
-  sequence: Tone.Sequence | null;
-  sequenceEvents: string[];
-  sequenceSubdivision: string;
-  noteDuration: string;
+  synth: Tone.Synth; // synthesizer
+  scale: string[]; // musical scale (notes only)
+  octave: number; // middle octave number
+  range: number; // range of octaves
+  notes: string[]; // list of playable notes (scale x octave)
+  sequence: Tone.Sequence | null; // tone sequence
+  sequenceEvents: string[]; // list of note+octave strings
+  sequenceSubdivision: string; // durational interval btw. notes in sequence
+  noteDuration: string; // how long note sounds
   distortion: Tone.Distortion;
   distortionLevel: number;
   reverb: Tone.Reverb;
@@ -46,7 +60,9 @@ export class Instrument {
   constructor() {
     // create synthesizer and connect to main output (speakers)
     this.synth = new Tone.Synth().toDestination();
-    this.sequence = null;
+    this.scale = scales['Dminor'];
+    (this.octave = 4), (this.range = 2), (this.sequence = null);
+    this.notes = [];
     this.sequenceEvents = ['D4', 'A4', 'D5', 'F5', 'A5', 'F5', 'D5', 'A4'];
     this.sequenceSubdivision = '8n';
     this.noteDuration = '16n';
@@ -56,6 +72,42 @@ export class Instrument {
     this.reverb = new Tone.Reverb(this.reverbDecay);
     this.isPlaying = false;
     this.createSequence();
+    this.createNotes();
+  }
+
+  /** create the available notes from the scale and the octaves +/- range */
+  createNotes() {
+    // todo: check for valid range & octave
+    const octaves = _.range(this.octave - this.range, this.octave + this.range);
+    for (let oct in octaves) {
+      this.notes = this.scale.map((note) => note + oct);
+    }
+    console.log('created available notes: ' + this.notes);
+  }
+
+  /** generate note events from data points by mapping the range of data to the available notes */
+  getNotesFromData(numberArray: number[]) {
+    const min = _.min(numberArray);
+    const max = _.max(numberArray);
+    const range = max - min;
+    // create array of evently spaced bins (n = available notes)
+    const binsize = range / this.notes.length;
+    const binCenters: number[] = _.range(min + binsize/2, max - binsize/2, binsize);
+    // for each data point, find the closest bin and add the corresponding note
+    let events: string[] = [];
+    let minDist = range;
+    let iClosestBin = 0;
+    for (let num of numberArray) {
+      // find the index of the binCenter closest to num
+      for (let i = 0; i < binCenters.length; i++) {
+        if (Math.abs(binCenters[i] - num) < minDist) {
+          minDist = Math.abs(binCenters[i] - num);
+          iClosestBin = i;
+        }
+      }
+      // add the corresponding note to events
+      events.push(this.notes[iClosestBin]);
+    }
   }
 
   /** create the tone sequence on this instrument from a list of note events, e.g. ['D4', 'C3'],
