@@ -80,10 +80,10 @@ export class Instrument {
     // todo: check for valid range & octave
     const octaves = range(
       this.octave - this.rangeOct,
-      this.octave + this.rangeOct
+      this.octave + this.rangeOct + 1
     );
-    for (let oct in octaves) {
-      this.notes = this.scale.map((note) => note + oct);
+    for (let oct of octaves) {
+      this.notes = [...this.notes, ...this.scale.map((note) => note + oct)];
     }
     console.log('created available notes: ');
     console.log(this.notes);
