@@ -62,6 +62,8 @@ export class Instrument {
   constructor() {
     // create synthesizer and connect to main output (speakers)
     this.synth = new Tone.Synth().toDestination();
+    this.synth.volume.value = -8;
+    console.log('VOL: ', this.synth.volume.value)
     this.scale = scales['Dminor'];
     (this.octave = 4), (this.rangeOct = 2), (this.sequence = null);
     this.notes = [];

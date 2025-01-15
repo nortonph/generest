@@ -4,19 +4,6 @@
  * Solo project for codeworks
  * Philipp Norton, 2025
  *
- * Proposal:
- * Transform publicly available data into generative music. Generest allows you to make data audible by
- * selecting time-series data from public RESTful web APIs to drive and modulate pre-configured synthesized
- * instruments running in your browser. Data will be discretized to harmonic scales and rhythmic time signatures
- * to bring about a musical quality that still maps to real-life events/measurements. The input could range
- * from sensor data like the traffic volume of a city or the water level of a river to stock prices and
- * social media messages.
- *
- * Not fully implemented yet:
- * - data fetching
- * - sequence generation from data
- * - visualization of module connections
- *
  * Guaranteed 100% AI free :)
  */
 
@@ -74,6 +61,8 @@ export class Module {
       return new Module(this.type, position, undefined, this.datasource);
     } else if (this.type === 'instrument') {
       return new Module(this.type, position, new Instrument(), undefined);
+    } else {
+      return new Module(this.type, position, undefined, undefined);
     }
   }
 }
