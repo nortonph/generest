@@ -31,4 +31,17 @@ Simple proxy server backend at [generest-server](https://github.com/nortonph/gen
 - Line.tsx: React component representing connections through 3d cylinders.
 - ControlInstrument.tsx / ControlDatasource.tsx: React component representing Module controls, visible when right-clicking on an active Shape (active are non-menu shapes)
 - instrument.tsx: handles instrument creation, parameter modulation, scale and sequence generation (from numerical data) and playback
-  - class Transport:
+  - class Transport: Tone.js main timekeeper
+  - class Instrument: manages Tone.js synth and parameters with various setters. also: transform numerical data into musical scales.
+- datasource.tsx: handles API fetches and getting the fetched data into a numerical array (currently tailored to Newcastle Urban Observatory but meant to be extendable to other APIs)
+
+### Some known bugs
+- It's possible to select multiple Shapes by hovering w/ unintended consequences
+- Weird stuff might happen when connecting multiple datasources to one instrument
+- Redundant connections can be added
+- left-clicking a datasource first and an instrument after will always make a connection, often unintended (main problem: dragging a shape also registers a left click)
+- InstrumentControl input fields reset to defaults when closing and oopening again (maybe because the component gets re-rendered?)
+
+### Some missing features
+- Datasource controls: especially select sensor
+- Remove connections
