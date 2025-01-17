@@ -1,16 +1,20 @@
-/*  This React Three Fiber component renders a 3d shape that represents
+/*  This React Three Fiber component renders a 3d Cube that represents
     a Module (Datasource / Instrument) in the interface.
 */
 
-import './Shape.css';
-import { useCallback, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Mesh, Vector3 } from 'three';
-import { useSpring, animated } from '@react-spring/three';
-import { DragControls, Html } from '@react-three/drei';
-import { Module, ModuleObj, Connection } from '../App';
-import ControlsInstrument from './ControlsInstrument';
-import ControlsDatasource from './ControlsDatasource';
+//TODO: Rename to Cube.tsx
+
+import { useCallback, useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
+import { Mesh, Vector3 } from "three";
+import { useSpring, animated } from "@react-spring/three";
+import { DragControls, Html } from "@react-three/drei";
+// import { Html } from "@react-three/drei";
+import { Module, ModuleObj, Connection } from "@/App";
+import ControlsInstrument from "@/components/ControlsInstrument";
+import ControlsDatasource from "@/components/ControlsDatasource";
+import { connectSourceToInstrument } from "@/helpers/shape-function";
+import CubePositionDebugger from "@/components/CubePositionDebugger";
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
@@ -20,15 +24,23 @@ interface ShapeProps {
   addConnection: (newConnection: Connection) => void;
   hotConnection: ModuleObj | undefined; // containing module that has been selected for connection (if any)
   setHotConnection: React.Dispatch<React.SetStateAction<ModuleObj | undefined>>;
-  key: number;
+  // key: number;
 }
 
-function Shape(props: ShapeProps) {
+function Shape({
+  moduleObj,
+  addModule,
+  updateModule,
+  addConnection,
+  hotConnection,
+  setHotConnection,
+}: // key,
+ShapeProps) {
   // This reference will give us direct access to the mesh
   // from r3f docs - "using with typescript" about null!:
   // "The exclamation mark is a non-null assertion that will let TS know that ref.current is defined when we access it in effects."
   const meshRef = useRef<Mesh>(null!);
-  props.moduleObj.module.meshRef = meshRef;
+  moduleObj.module.meshRef = meshRef;
 
   // States and Refs ###############################################
   // const state = useThree();
@@ -42,13 +54,13 @@ function Shape(props: ShapeProps) {
   // - easing animations for changes of color, size etc.
   const [springs, api] = useSpring(() => ({
     scale: 1,
-    color: props.moduleObj.module.color,
+    color: moduleObj.module.color,
     // set different durations based on what is being animated
-    config: (key) => {
+    config: (key: any) => {
       switch (key) {
-        case 'scale':
+        case "scale":
           return { duration: 100 };
-        case 'color':
+        case "color":
           return { duration: 200 };
         default:
           return {};
@@ -58,29 +70,20 @@ function Shape(props: ShapeProps) {
 
   // Mouse Interface ###############################################
   const handleLeftClick = () => {
-    if (expanded) {
-      switch (props.moduleObj.module.type) {
-        case 'instrument':
-          console.log('Clicked on instrument (not implemented)');
+    // Connect if it's an instrument and there is a hotConnection
+    if (!expanded) {
+      switch (moduleObj.module.type) {
+        case "instrument":
+          if (hotConnection) {
+            createConnection();
+          } else {
+            console.log("Click a blue box first");
+          }
           break;
-        case 'trigger':
-          console.log('Clicked a trigger (not implemented)');
-          break;
-      }
-    } else {
-      // not expanded
-      switch (props.moduleObj.module.type) {
-        case 'instrument':
-          console.log('Clicked an instrument for connection');
-          // if a module has been selected for connection previously, it will be in hotConnection
-          createConnection();
-          break;
-        case 'trigger':
-          console.log('Clicked a trigger for connection (not implemented)');
-          break;
-        case 'datasource':
-          console.log('Clicked a datasource for connection');
-          props.setHotConnection(props.moduleObj);
+
+        case "datasource":
+          console.log("Clicked a datasource for connection");
+          setHotConnection(moduleObj);
           break;
       }
     }
@@ -88,27 +91,28 @@ function Shape(props: ShapeProps) {
 
   const handleRightClick = useCallback(() => {
     return () => {
+      // Does nothing if one of the top 3 is clicked
       if (!active) return null;
+      setControlsVisible(!expanded);
       expanded = !expanded;
-      // rotating.current = !expanded;
-      setControlsVisible(expanded);
+
+      //Shows
       api.start({
         scale: expanded ? 7 : 1,
       });
     };
   }, [active]);
 
-  const handlePointerOver = () => {
-    // starts hovering
+  const makeCubeWhite = () => {
+    // Changes the hovered cube's color to white with a transition
     api.start({
-      color: 'thistle',
+      color: "white",
     });
   };
 
-  const handlePointerOut = () => {
-    // stops hovering
+  const revertCubeColor = () => {
     api.start({
-      color: props.moduleObj.module.color,
+      color: moduleObj.module.color,
     });
   };
 
@@ -126,50 +130,37 @@ function Shape(props: ShapeProps) {
     // when dragging an inactive Shape ("menu item"), set it active and create a new inactive one in its place
     if (!active) {
       setActive(true);
-      props.addModule(
-        props.moduleObj.module.clone(props.moduleObj.module.position)
-      );
+      addModule(moduleObj.module.clone(moduleObj.module.position));
     }
   }
 
   function createConnection() {
-    // if a module has been selected for connection previously, it will be in hotConnection
-    if (props.hotConnection) {
-      console.log('connection is hot, connection these two: ');
-      console.log(
-        props.hotConnection.module,
-        props.moduleObj.module.instrument
-      );
-      // create a new connection object and add it to the list
-      const fromModule = props.hotConnection;
-      const toModule = props.moduleObj;
-      const newConnection = new Connection(fromModule.id, toModule.id);
-      props.addConnection(newConnection);
-      // connect datasource to instrument
-      // todo: move this somewhere else (some method or function connectDatasourceToInstrument() ?)
-      const noteEvents = toModule.module.instrument?.getNotesFromData(
-        fromModule.module.datasource?.numberArray!
-      );
-      toModule.module.instrument?.setSequenceEvents(noteEvents!);
-      toModule.module.instrument?.createSequence();
-      toModule.module.instrument?.playSequence();
-      // reset hotConnection
-      props.setHotConnection(undefined);
-    }
+    // create a new connection object and add it to the list
+    const fromModule = hotConnection!;
+    const toModule = moduleObj;
+    const newConnection = new Connection(fromModule.id, toModule.id);
+
+    //Create the cylinder going from blue to orange
+    addConnection(newConnection);
+
+    // Connect the data to the instrument
+    connectSourceToInstrument({ toModule, fromModule });
+
+    //Remove hot connection
+    setHotConnection(undefined);
   }
 
   function updatePosition() {
     // update the absolute position of the shape in the scene (position of DragControls, which is the parent, plus initial position)
-    props.moduleObj.module.worldPos = meshRef
+    moduleObj.module.worldPos = meshRef
       .current!.parent!.getWorldPosition(new Vector3())
-      .add(props.moduleObj.module.position);
-    props.updateModule(props.moduleObj);
+      .add(moduleObj.module.position);
+    updateModule(moduleObj);
   }
 
   // JSX ###############################################
   return (
     <>
-      {/* This wrapping tag enables drag-and-drop by left click on the shape */}
       <DragControls
         onDragStart={() => {
           cloneShape();
@@ -177,36 +168,30 @@ function Shape(props: ShapeProps) {
         onDrag={() => {
           updatePosition();
         }}
+        // Need to update this to make sure we create a new cube that doesn't collide with any other cube
         onDragEnd={() => {}}
       >
-        {/* NOTE TO LEGACY TEAM: if animated.mesh (i.e. the cube) has a direct parent other than DragControls, worldPos might not be correctly calculated! */}
         <animated.mesh
           ref={meshRef}
-          position={props.moduleObj.module.position}
+          position={moduleObj.module.position}
           scale={springs.scale}
-          onPointerOver={handlePointerOver}
-          onPointerOut={handlePointerOut}
+          onPointerOver={makeCubeWhite}
+          onPointerOut={revertCubeColor}
           onClick={handleLeftClick}
           onContextMenu={handleRightClick()}
         >
           <boxGeometry args={[1, 1, 1]} />
           <animated.meshStandardMaterial color={springs.color} />
           {controlsVisible ? (
-            props.moduleObj.module.type === 'instrument' ? (
-              <ControlsInstrument
-                instrument={props.moduleObj.module.instrument!}
-              />
-            ) : props.moduleObj.module.type === 'datasource' ? (
+            moduleObj.module.type === "instrument" ? (
+              <ControlsInstrument instrument={moduleObj.module.instrument!} />
+            ) : moduleObj.module.type === "datasource" ? (
               <ControlsDatasource />
             ) : null
           ) : null}
+
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}
-          {/* <Html className='debug'>
-            <p>Render ID {Math.random()}</p>
-            <p>worldPosX {Math.round(props.moduleObj.module.worldPos.x! * 10)/10}</p>
-            <p>worldPosY {Math.round(props.moduleObj.module.worldPos.y! * 10)/10}</p>
-            <p>worldPosZ {Math.round(props.moduleObj.module.worldPos.z! * 10)/10}</p>
-          </Html> */}
+          {/* <CubePositionDebugger position={moduleObj.module.worldPos} /> */}
         </animated.mesh>
       </DragControls>
     </>

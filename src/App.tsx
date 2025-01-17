@@ -7,14 +7,14 @@
  * Guaranteed 100% AI free :)
  */
 
-import './App.css';
-import { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Mesh, Vector3 } from 'three';
-import Shape from './components/Shape.tsx';
-import Line from './components/Line.tsx';
-import { Instrument, transport } from './instrument.tsx';
-import { Datasource } from './datasource.tsx';
+import "./App.css";
+import { useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Mesh, Vector3 } from "three";
+import Shape from "./components/Shape.tsx";
+import Line from "./components/Line.tsx";
+import { Instrument, transport } from "./instrument.tsx";
+import { Datasource } from "./datasource.tsx";
 
 // A Module can be an instrument, an online data source (API) or another trigger,
 // each represented by a 3d shape in the interface.
@@ -43,23 +43,23 @@ export class Module {
     this.datasource = datasource;
     this.meshRef = undefined;
     switch (type) {
-      case 'datasource':
-        this.color = 'royalblue';
+      case "datasource":
+        this.color = "royalblue";
         break;
-      case 'trigger':
-        this.color = 'hotpink';
+      case "trigger":
+        this.color = "hotpink";
         break;
-      case 'instrument':
-        this.color = 'orange';
+      case "instrument":
+        this.color = "orange";
         break;
       default:
-        this.color = 'white';
+        this.color = "white";
     }
   }
   clone(position: Vector3) {
-    if (this.type === 'datasource') {
+    if (this.type === "datasource") {
       return new Module(this.type, position, undefined, this.datasource);
-    } else if (this.type === 'instrument') {
+    } else if (this.type === "instrument") {
       return new Module(this.type, position, new Instrument(), undefined);
     } else {
       return new Module(this.type, position, undefined, undefined);
@@ -105,19 +105,19 @@ function App() {
   //  and activated by dragging it into the interface area)
   function createShapes() {
     const datasource = new Module(
-      'datasource',
+      "datasource",
       new Vector3(-3, 6, 0),
       undefined,
       new Datasource()
     );
     const trigger = new Module(
-      'trigger',
+      "trigger",
       new Vector3(0, 6, 0),
       undefined,
       undefined
     );
     const instrument = new Module(
-      'instrument',
+      "instrument",
       new Vector3(3, 6, 0),
       new Instrument(),
       undefined
@@ -134,7 +134,7 @@ function App() {
   // create the "menu" shapes (ensure that this only runs once)
   if (modules.length === 0) {
     createShapes();
-    console.log('createShapes called');
+    console.log("createShapes called");
   }
 
   // start main time component of Tone.js
@@ -142,14 +142,14 @@ function App() {
     transport.start();
     // loop through instruments and stop them
     modules.forEach((m) => {
-      if (m.module.type === 'instrument') m.module.instrument?.playSequence();
+      if (m.module.type === "instrument") m.module.instrument?.playSequence();
     });
   };
   const handleStop = () => {
     transport.stop();
     // loop through instruments and stop them
     modules.forEach((m) => {
-      if (m.module.type === 'instrument') m.module.instrument?.stopSequence();
+      if (m.module.type === "instrument") m.module.instrument?.stopSequence();
     });
   };
 
@@ -176,7 +176,7 @@ function App() {
       updatedModules[moduleObj.id].module = moduleObj.module;
       return updatedModules;
     });
-    console.log('in App: modules updated');
+    console.log("in App: modules updated");
   }
 
   function addConnection(newConnection: Connection): void {
@@ -209,8 +209,8 @@ function App() {
   return (
     <>
       <span onContextMenu={(e) => e.nativeEvent.preventDefault()}>
-      <button onClick={handleStart}>start</button>
-      <button onClick={handleStop}>stop</button>
+        <button onClick={handleStart}>start</button>
+        <button onClick={handleStop}>stop</button>
         <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
           <Environment />
           {modules.length ? (
@@ -254,13 +254,15 @@ function Environment() {
   // JSX
   return (
     <>
+      {/* <OrbitControls> */}
       <ambientLight intensity={1.0} />
       {/* directionalLight: sun; casts shadows; infinitely far w/ parallel rays */}
       {/* pointLight: light bulb */}
-      <directionalLight color='white' position={dirLightPos} />
+      <directionalLight color="white" position={dirLightPos} />
       <mesh position={dirLightPos} visible={false} /* DEBUG */>
         <boxGeometry />
       </mesh>
+      {/* </OrbitControls> */}
     </>
   );
 }
