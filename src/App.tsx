@@ -18,6 +18,7 @@ import { Datasource } from "./datasource.tsx";
 
 // A Module can be an instrument, an online data source (API) or another trigger,
 // each represented by a 3d shape in the interface.
+// TODO: Move to models/Module.ts | Rename to Cube
 export class Module {
   // todo: put classes in a different file?
   // note: position here is the original position at creation and does not change (position in the "menu")
@@ -69,6 +70,7 @@ export class Module {
 
 // to track the state of modules in App.tsx, modules are wrapped in an object with numeric id
 // (this can probably be refactored, it is a relatively late addition)
+// TODO: Move to a models/types.ts
 export interface ModuleObj {
   id: number;
   module: Module;
@@ -76,6 +78,7 @@ export interface ModuleObj {
 
 // A connection is formed between two modules, from a datasource
 // (in the future maybe also from a trigger) to an instrument
+// TODO: Move to models/Connection.ts
 export class Connection {
   fromModuleId: number; // add Trigger here later
   toModuleId: number;
@@ -86,6 +89,7 @@ export class Connection {
 }
 
 // to track the state of connections in App.tsx, connections are wrapped in an object with numeric id
+// TODO: Move to a models/types.ts
 export interface ConnectionObj {
   id: number;
   connection: Connection;
@@ -104,6 +108,7 @@ function App() {
   // "Menu items" (i.e. one static instance of each module that can be cloned
   //  and activated by dragging it into the interface area)
   function createShapes() {
+    // TODO: Refactor addModule -> src
     const datasource = new Module(
       "datasource",
       new Vector3(-3, 6, 0),
@@ -132,6 +137,7 @@ function App() {
   }
 
   // create the "menu" shapes (ensure that this only runs once)
+  // TODO: initialize with useEffect - outside of this function (move to top of file)
   if (modules.length === 0) {
     createShapes();
     console.log("createShapes called");
@@ -153,10 +159,13 @@ function App() {
     });
   };
 
-  // module & connection creation/update ###################################
+  // TODO: ADD Render connections AND Render modules here <-
 
+  // module & connection creation/update ###################################
+  // TODO: createID helper function
   function addModule(newModule: Module): void {
     setModules((existingModules) => {
+      // TODO: Extract to helper function
       if (!existingModules.length) return [{ id: 0, module: newModule }];
       // find highest existing id
       const maxId = existingModules.reduce((a, b) => (a.id > b.id ? a : b)).id;
@@ -179,6 +188,7 @@ function App() {
     console.log("in App: modules updated");
   }
 
+  // TODO: Move to utils/connection.utils.ts
   function addConnection(newConnection: Connection): void {
     setConnections((existingConnections) => {
       if (!existingConnections.length)
@@ -195,6 +205,15 @@ function App() {
     });
   }
 
+  // TODO: Move to utils/connection.utils.ts
+  // TODO: Add remove connection function -> add to connections utility
+  function removeConnection(connectionId: number): void {
+    setConnections((existingConnections) =>
+      existingConnections.filter((conn) => conn.id !== connectionId)
+    );
+  }
+
+  // TODO: Remove function
   function updateConnection(connectionObj: ConnectionObj): void {
     // update the state (list of connection objects in App.tsx) with changes made to connectionObj
     setConnections((existingConnections) => {
@@ -206,6 +225,7 @@ function App() {
   }
 
   // JSX ###############################################
+  // TODO: Extract render logic to seperate functions for renderConnection and renderModules
   return (
     <>
       <span onContextMenu={(e) => e.nativeEvent.preventDefault()}>
@@ -248,6 +268,7 @@ function App() {
 }
 
 // Component for lighting, etc.
+// TODO: Move to components/Environment.tsx
 function Environment() {
   const dirLightPos = new Vector3(5, 2, 5);
 
