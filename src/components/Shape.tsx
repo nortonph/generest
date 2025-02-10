@@ -8,7 +8,8 @@ import { useFrame } from '@react-three/fiber';
 import { Mesh, Vector3 } from 'three';
 import { useSpring, animated } from '@react-spring/three';
 import { DragControls, Html } from '@react-three/drei';
-import { Module, ModuleObj, Connection } from '../App';
+import { Module, ModuleObj } from '../models/module';
+import { Connection } from '../models/connection';
 import ControlsInstrument from './ControlsInstrument';
 import ControlsDatasource from './ControlsDatasource';
 

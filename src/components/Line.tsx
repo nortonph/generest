@@ -1,6 +1,7 @@
 import { Vector3, ArrowHelper } from 'three';
 import { Html } from '@react-three/drei';
-import { ConnectionObj, ModuleObj } from '../App';
+import { ConnectionObj } from '../models/connection';
+import { ModuleObj } from '../models/module';
 
 interface LineProps {
   connectionObj: ConnectionObj;
@@ -14,7 +15,7 @@ function Line(props: LineProps) {
   const idTo = props.connectionObj.connection.toModuleId;
   const posFrom = props.modules[idFrom].module.worldPos;
   const posTo = props.modules[idTo].module.worldPos;
-  const direction = new Vector3().subVectors(posTo, posFrom).normalize(); // todo: understand why normalize is needed here
+  const direction = new Vector3().subVectors(posTo, posFrom).normalize();
   const distance = new Vector3().subVectors(posTo, posFrom).length();
   const arrow = new ArrowHelper(direction, posFrom, distance);
 
