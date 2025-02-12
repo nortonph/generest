@@ -2,6 +2,8 @@
 
 ### Generative music playground using public APIs as input.
 
+![screenshot](screenshot.png)
+
 Transform publicly available data into generative music. Generest allows you to make data audible by selecting time-series data from public RESTful web APIs to drive and modulate pre-configured synthesized instruments running in your browser. Data will be discretized to harmonic scales and rhythmic time signatures to bring about a musical quality that still maps to real-life events/measurements. The input could range from sensor data like the traffic volume of a city or the water level of a river to stock prices and social media messages.
 
 Fetches sensor data from [Newcastle Urban Observatory](https://newcastle.urbanobservatory.ac.uk/), but can be extended to other public APIs.
