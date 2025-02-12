@@ -13,6 +13,10 @@ Fetches sensor data from [Newcastle Urban Observatory](https://newcastle.urbanob
 - run `npm run serve` to start proxy server
 - run `npm run start` in separate terminal
 - navigate to `http://localhost:5173/` in browser
+- drag-and-drop shapes to the center of the screen
+- right-click shape to show controls
+- left-click datasource, then instrument to connect the two
+- press global start button (stop, then start to synchronize instruments)
 
 ### Tech Stack
 
