@@ -197,7 +197,12 @@ export class Instrument {
   // todo: check input validity for all these
   setScale(scaleName: keyof typeof scales) {
     this.scale = scales[scaleName];
-  }
+    this.createNotes();
+    this.getNotesFromData();
+    this.sequence?.stop(); // todo: start at same note? check global sync
+    this.createSequence(undefined, undefined);
+    this.sequence?.start();
+}
 
   setSequenceTempo(tempo: string) {
     console.log('setting sequence tempo to: ' + tempo);

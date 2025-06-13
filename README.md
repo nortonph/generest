@@ -59,8 +59,9 @@ Fetches sensor data from [Newcastle Urban Observatory](https://newcastle.urbanob
 - It's possible to select multiple Shapes by hovering w/ unintended consequences
 - Weird stuff might happen when connecting multiple datasources to one instrument
 - Redundant connections can be added
-- Left-clicking a datasource first and an instrument after will always make a connection, often unintended (main problem: dragging a shape also registers a left click)
-- InstrumentControl input fields reset to defaults when closing and oopening again (maybe because the component gets re-rendered?)
+- InstrumentControl input fields reset to defaults when closing and opening again (maybe because the component gets re-rendered?)
+- changing instrument params sometimes duplicates the synth
+- right clicking can register on shape and line simultaneously (accidental removal of connection)
 
 ### Missing features
 - Datasource controls: especially select sensor
