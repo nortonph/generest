@@ -138,9 +138,9 @@ export class Instrument {
       // add the corresponding note to events
       events.push(this.notes[iClosestBin]);
     }
+    this.setSequenceEvents(events);
     console.log('generated note events from data: ');
     console.log(events);
-    return events;
   }
 
   /** create the tone sequence on this instrument from a list of note events, e.g. ['D4', 'C3'],

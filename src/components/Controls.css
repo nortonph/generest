@@ -1,3 +1,8 @@
+:root {
+  --pico-spacing: 0.3rem;
+  --pico-form-element-spacing-horizontal: 0.3rem;
+}
+
 .controls {
   background-color:#0f0f0f;
   color: antiquewhite;
@@ -13,7 +18,7 @@
 }
 
 select {
-  padding: 0.5rem;
+  padding: 0.1rem;
 }
 
 button {

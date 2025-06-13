@@ -144,10 +144,7 @@ function Shape(props: ShapeProps) {
       props.addConnection(newConnection);
       // connect datasource to instrument
       // todo: move this somewhere else (some method or function connectDatasourceToInstrument() ?)
-      const noteEvents = toModule.module.instrument?.getNotesFromData(
-        fromModule.module.datasource?.numberArray!
-      );
-      toModule.module.instrument?.setSequenceEvents(noteEvents!);
+      toModule.module.instrument?.getNotesFromData(fromModule.module.datasource?.numberArray!);
       toModule.module.instrument?.createSequence();
       toModule.module.instrument?.playSequence();
       // reset hotConnection
