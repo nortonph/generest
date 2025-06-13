@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Vector3, ArrowHelper } from 'three';
 import { Html } from '@react-three/drei';
 import { ConnectionObj } from '../models/connection';
@@ -5,6 +6,7 @@ import { ModuleObj } from '../models/module';
 
 interface LineProps {
   connectionObj: ConnectionObj;
+  removeConnection: (connectionObj: ConnectionObj) => void;
   modules: ModuleObj[];
   key: number;
 }
@@ -26,10 +28,21 @@ function Line(props: LineProps) {
   const cylinderRotation = arrow.rotation.clone();
   const cylinderPosition = new Vector3().addVectors(posFrom, cylinderDirection);
 
+  const handleRightClick = useCallback(() => {
+    // remove connection
+    return (() => {
+      console.log('right-clicked Line -> removing connection')
+      // todo: more needed to reset instrument? -> write instrument method reset()
+      props.modules[idTo].module.instrument?.stopSequence();
+      props.modules[idTo].module.instrument?.clearSequence();
+      props.removeConnection(props.connectionObj)
+    })
+  }, [])
+
   // JSX
   return (
     <>
-      <mesh position={cylinderPosition} rotation={cylinderRotation}>
+      <mesh position={cylinderPosition} rotation={cylinderRotation} onContextMenu={handleRightClick()}>
         <cylinderGeometry args={[0.1, 0.1, distance, 32]} />
         <meshStandardMaterial color={'slategray'} />
       </mesh>

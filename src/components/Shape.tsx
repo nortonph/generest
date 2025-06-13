@@ -21,7 +21,6 @@ interface ShapeProps {
   addConnection: (newConnection: Connection) => void;
   hotConnection: ModuleObj | undefined; // containing module that has been selected for connection (if any)
   setHotConnection: React.Dispatch<React.SetStateAction<ModuleObj | undefined>>;
-  hasBeenDragged: boolean;
   key: number;
 }
 

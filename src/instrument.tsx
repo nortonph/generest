@@ -78,7 +78,7 @@ export class Instrument {
     this.reverb = new Tone.Reverb(this.reverbDecay);
     this.isPlaying = false;
     this.createSequence();
-    this.createNotes();
+    this.createNotes();  // todo: remove?
   }
 
   /** create the available notes from the scale and the octaves +/- range */
@@ -164,6 +164,14 @@ export class Instrument {
     // todo: check data validity
     this.sequenceEvents = events;
   }
+
+  clearSequence() {
+    this.notes = [];
+    this.sequence = null;
+    this.dataArray = [];
+    this.sequenceEvents = [];
+    this.createSequence();  // todo: remove?
+}
 
   playSequence() {
     if (this.sequence !== null) {

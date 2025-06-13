@@ -124,6 +124,19 @@ function App() {
     });
   }
 
+  function removeConnection(connectionObj: ConnectionObj): void {
+    // update the state (list of connection objects in App.tsx) with changes made to connectionObj
+    setConnections((existingConnections) => {
+      console.log('removeConnection() called');
+      const updatedConnections = [...existingConnections];
+      const iConn = updatedConnections.indexOf(connectionObj);
+      if (iConn > -1) {
+        updatedConnections.splice(iConn, 1);
+      }
+      return updatedConnections;
+    });
+  }
+
   // JSX ###############################################
   return (
     <>
@@ -154,6 +167,7 @@ function App() {
                 return (
                   <Line
                     connectionObj={connectionObj}
+                    removeConnection={removeConnection}
                     modules={modules}
                     key={connectionObj.id}
                   ></Line>
