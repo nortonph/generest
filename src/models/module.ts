@@ -22,6 +22,7 @@ export class Module {
   instrument: Instrument | undefined;
   datasource: Datasource | undefined;
   meshRef: React.MutableRefObject<Mesh> | undefined; // reference to the Shape mesh (e.g. cube)
+  hasBeenDragged: boolean;
   constructor(
     type: string,
     position: Vector3,
@@ -34,6 +35,7 @@ export class Module {
     this.instrument = instrument;
     this.datasource = datasource;
     this.meshRef = undefined;
+    this.hasBeenDragged = false;
     switch (type) {
       case 'datasource':
         this.color = 'royalblue';

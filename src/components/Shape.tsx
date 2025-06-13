@@ -21,6 +21,7 @@ interface ShapeProps {
   addConnection: (newConnection: Connection) => void;
   hotConnection: ModuleObj | undefined; // containing module that has been selected for connection (if any)
   setHotConnection: React.Dispatch<React.SetStateAction<ModuleObj | undefined>>;
+  hasBeenDragged: boolean;
   key: number;
 }
 
@@ -59,17 +60,13 @@ function Shape(props: ShapeProps) {
 
   // Mouse Interface ###############################################
   const handleLeftClick = () => {
-    if (expanded) {
-      switch (props.moduleObj.module.type) {
-        case 'instrument':
-          console.log('Clicked on instrument (not implemented)');
-          break;
-        case 'trigger':
-          console.log('Clicked a trigger (not implemented)');
-          break;
-      }
+    // if the click triggers when releasing from drag-and-drop, do nothing
+    if (props.moduleObj.module.hasBeenDragged) {
+      props.moduleObj.module.hasBeenDragged = false;
+    } else if (expanded) {
+      console.log('Left-clicked an expanded module (not implemented)');
     } else {
-      // not expanded
+      // not expanded -> create a connection (or prime one by setting "hot connection")
       switch (props.moduleObj.module.type) {
         case 'instrument':
           console.log('Clicked an instrument for connection');
@@ -173,6 +170,7 @@ function Shape(props: ShapeProps) {
       {/* This wrapping tag enables drag-and-drop by left click on the shape */}
       <DragControls
         onDragStart={() => {
+          props.moduleObj.module.hasBeenDragged = true
           cloneShape();
         }}
         onDrag={() => {
