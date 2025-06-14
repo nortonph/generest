@@ -11,6 +11,7 @@ import { Canvas } from '@react-three/fiber';
 import { Vector3, Mesh } from 'three';
 import Shape from './components/Shape.tsx';
 import Line from './components/Line.tsx';
+import About from './components/About.tsx';
 import Environment from './components/Environment.tsx';
 import { Instrument, transport } from './instrument.tsx';
 import { Datasource } from './datasource.tsx';
@@ -27,6 +28,7 @@ function App() {
     undefined
   );
   const [hoveredMeshes, setHoveredMeshes] = useState<Mesh[]>([]);
+  const [isOpenAbout, setIsOpenAbout] = useState(false);
 
   // "Menu items" (i.e. one static instance of each module that can be cloned
   //  and activated by dragging it into the interface area)
@@ -71,6 +73,9 @@ function App() {
     modules.forEach((m) => {
       if (m.module.type === 'instrument') m.module.instrument?.stopSequence();
     });
+  };
+  const handleAbout = () => {
+    setIsOpenAbout(!isOpenAbout);
   };
 
   // module & connection creation/update ###################################
@@ -142,8 +147,13 @@ function App() {
   return (
     <>
       <span onContextMenu={(e) => e.nativeEvent.preventDefault()}>
-        <button onClick={handleStart}>start</button>
-        <button onClick={handleStop}>stop</button>
+        <div className='mainButtons'>
+          <button onClick={handleStart}>▷</button>
+          <button onClick={handleStop}>▢</button>
+          <button onClick={handleAbout} className='buttonAbout'>
+            ?
+          </button>
+        </div>
         <Canvas camera={{ position: [0, 0, 20], fov: 40 }}>
           <Environment />
           {modules.length ? (
@@ -179,6 +189,12 @@ function App() {
                 );
               })
             : null}
+          <About
+            isOpen={isOpenAbout}
+            onClose={() => {
+              setIsOpenAbout(false);
+            }}
+          ></About>
         </Canvas>
       </span>
     </>

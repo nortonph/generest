@@ -1,8 +1,23 @@
+:root {
+  --color-main: #333333;
+  --color-main-light: #444444;
+  --color-main-lighter: #555555;
+  --color-white: linen;
+}
+
 html, body, #root {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+  --pico-spacing: 0.5rem;
+  --pico-form-element-spacing-horizontal: 0.3rem;
+  /* range sliders */
+  --pico-range-border-color: var(--color-main-lighter);
+  --pico-range-active-border-color: var(--color-white);
+  --pico-range-thumb-border-color: var(--color-main);
+  --pico-range-thumb-color: var(--color-white);
+  --pico-range-thumb-active-color: var(--color-white);
 }
 
 :root {
@@ -13,4 +28,32 @@ html, body, #root {
 body {
   background: #1b1b1b;
   position: fixed;
+}
+
+button {
+  background-color: var(--color-main);
+  padding: 0.5rem 1rem;
+  border: none;
+  margin-right: 0.5rem;
+  color: var(--color-white);
+}
+button:hover {
+  background-color: var(--color-main-lighter);
+}
+
+.mainButtons {
+  display: flex;
+  margin: 1.5rem;
+  background-color: transparent; 
+  pointer-events: none; 
+}
+.mainButtons button {
+  padding: 0rem 1rem 0.3rem 1rem;
+  font-weight: bold;
+  font-size: 2rem;
+  pointer-events: auto; 
+}
+.mainButtons .buttonAbout {
+  margin-left: auto;
+  padding: 0rem 1.3rem 0rem 1.3rem;
 }

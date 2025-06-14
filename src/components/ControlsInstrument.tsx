@@ -2,7 +2,7 @@
  */
 
 import './Controls.css';
-import { useState, MouseEventHandler } from 'react';
+import { useState } from 'react';
 import { Html } from '@react-three/drei';
 import { Instrument, scales } from '../instrument';
 

@@ -1,0 +1,24 @@
+.about {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(17, 17, 17, 0.9);
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  width: 400px;
+}
+
+.about h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.about p {
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+  color: #cccccc;
+}
