@@ -199,10 +199,14 @@ function Shape(props: ShapeProps) {
           {controlsVisible ? (
             props.moduleObj.module.type === 'instrument' ? (
               <ControlsInstrument
+                handleClose={handleRightClick()}
                 instrument={props.moduleObj.module.instrument!}
               />
             ) : props.moduleObj.module.type === 'datasource' ? (
-              <ControlsDatasource />
+              <ControlsDatasource 
+                handleClose={handleRightClick()}
+                datasource={props.moduleObj.module.datasource!}
+              />
             ) : null
           ) : null}
           {/* uncomment the following to track whether this object re-renders due to state change (import Html from drei) */}

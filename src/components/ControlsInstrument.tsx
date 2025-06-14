@@ -2,12 +2,13 @@
  */
 
 import './Controls.css';
-import { useState } from 'react';
+import { useState, MouseEventHandler } from 'react';
 import { Html } from '@react-three/drei';
 import { Instrument, scales } from '../instrument';
 
 interface ControlsInstrumentProps {
   instrument: Instrument;
+  handleClose: () => void;
 }
 
 function ControlsInstrument(props: ControlsInstrumentProps) {
@@ -16,11 +17,9 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
   const [octave, setOctave] = useState(4);
   const [octRange, setOctRange] = useState(2);
 
-  const handleSelectScale = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleSelectScale = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
-    props.instrument.setScale(event.target.value as (keyof typeof scales));
+    props.instrument.setScale(event.target.value as keyof typeof scales);
   };
   const handleSelectTempo = (tempo: string) => {
     console.log(tempo);
@@ -45,7 +44,7 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
   };
   const handleSelectOctaveRange = (octRange: number) => {
     console.log(octRange);
-    setOctRange(octRange)
+    setOctRange(octRange);
     props.instrument.setOctaveRange(octRange);
   };
   const handleCheckboxDistortion = (
@@ -105,17 +104,37 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
         </div>
         <div className='control'>
           <label htmlFor='tempo'>tempo: </label>
-          <input type='range' name='tempo' id='tempo' min='1' max='6' 
+          <input
+            type='range'
+            name='tempo'
+            id='tempo'
+            min='1'
+            max='6'
             value={Math.log(parseInt(tempo)) / Math.log(2)}
-            onChange={(event) => {handleSelectTempo(Math.pow(2, parseInt(event.target.value)) + 'n');}}/>
-          <span>{tempo}</span>      
+            onChange={(event) => {
+              handleSelectTempo(
+                Math.pow(2, parseInt(event.target.value)) + 'n'
+              );
+            }}
+          />
+          <span>{tempo}</span>
         </div>
         <div className='control'>
           <label htmlFor='note-duration'>note dur.: </label>
-          <input type='range' name='note-duration' id='note-duration' min='1' max='6' 
+          <input
+            type='range'
+            name='note-duration'
+            id='note-duration'
+            min='1'
+            max='6'
             value={Math.log(parseInt(noteDur)) / Math.log(2)}
-            onChange={(event) => {handleSelectNoteDuration(Math.pow(2, parseInt(event.target.value)) + 'n');}}/>
-          <span>{noteDur}</span>      
+            onChange={(event) => {
+              handleSelectNoteDuration(
+                Math.pow(2, parseInt(event.target.value)) + 'n'
+              );
+            }}
+          />
+          <span>{noteDur}</span>
         </div>
         {/* <label htmlFor='sequence-length'>sequence-length: </label>
         <select
@@ -134,17 +153,33 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
         <br /> */}
         <div className='control'>
           <label htmlFor='octave'>octave: </label>
-          <input type='range' name='octave' id='octave' min='2' max='7' 
+          <input
+            type='range'
+            name='octave'
+            id='octave'
+            min='2'
+            max='7'
             value={octave}
-            onChange={(event) => {handleSelectOctave(parseInt(event.target.value));}}/>
-          <span>{octave}</span>      
+            onChange={(event) => {
+              handleSelectOctave(parseInt(event.target.value));
+            }}
+          />
+          <span>{octave}</span>
         </div>
         <div className='control'>
           <label htmlFor='octave-range'>oct. range: </label>
-          <input type='range' name='octave-range' id='octave-range' min='0' max='4' 
+          <input
+            type='range'
+            name='octave-range'
+            id='octave-range'
+            min='0'
+            max='4'
             value={octRange}
-            onChange={(event) => {handleSelectOctaveRange(parseInt(event.target.value));}}/>
-          <span>{octRange}</span>      
+            onChange={(event) => {
+              handleSelectOctaveRange(parseInt(event.target.value));
+            }}
+          />
+          <span>{octRange}</span>
         </div>
         <div className='control'>
           <label htmlFor='distortion'>distortion:</label>
@@ -190,6 +225,9 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
         <div className='controlButtons'>
           <button onClick={handleClickPlay}>play</button>
           <button onClick={handleClickStop}>stop</button>
+          <button onClick={props.handleClose} className='buttonClose'>
+            close
+          </button>
         </div>
       </div>
     </Html>

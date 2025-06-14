@@ -26,7 +26,7 @@ function App() {
   const [hotConnection, setHotConnection] = useState<ModuleObj | undefined>(
     undefined
   );
-  const [hoveredMeshes, setHoveredMeshes] = useState<Mesh[]>([])
+  const [hoveredMeshes, setHoveredMeshes] = useState<Mesh[]>([]);
 
   // "Menu items" (i.e. one static instance of each module that can be cloned
   //  and activated by dragging it into the interface area)

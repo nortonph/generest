@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  background-color:#0f0f0f;
+  background-color: #0f0f0f;
   color: antiquewhite;
   /* pointer-events: none; */
   padding: 1rem 1rem;
@@ -25,14 +25,21 @@
   gap: 0rem 0.5rem;
 }
 
-label  {
+label {
   flex: 1 1 30%;
 }
-input[type="range"] {
+input[type='range'] {
   flex: 1 1 50%;
 }
 span {
   flex: 1 1 10%;
+}
+
+.controlButtons {
+  display: flex;
+}
+.buttonClose {
+  margin-left: auto;
 }
 
 select {
