@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Vector3, ArrowHelper } from 'three';
+import { Vector3, ArrowHelper, Mesh } from 'three';
 import { Html } from '@react-three/drei';
 import { ConnectionObj } from '../models/connection';
 import { ModuleObj } from '../models/module';
@@ -8,6 +8,8 @@ interface LineProps {
   connectionObj: ConnectionObj;
   removeConnection: (connectionObj: ConnectionObj) => void;
   modules: ModuleObj[];
+  hoveredMeshes: Mesh[];
+  setHoveredMeshes: React.Dispatch<React.SetStateAction<Mesh[]>>;
   key: number;
 }
 

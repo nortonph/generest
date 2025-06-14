@@ -8,7 +8,7 @@
 import './App.css';
 import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Vector3 } from 'three';
+import { Vector3, Mesh } from 'three';
 import Shape from './components/Shape.tsx';
 import Line from './components/Line.tsx';
 import Environment from './components/Environment.tsx';
@@ -26,6 +26,7 @@ function App() {
   const [hotConnection, setHotConnection] = useState<ModuleObj | undefined>(
     undefined
   );
+  const [hoveredMeshes, setHoveredMeshes] = useState<Mesh[]>([])
 
   // "Menu items" (i.e. one static instance of each module that can be cloned
   //  and activated by dragging it into the interface area)
@@ -155,6 +156,8 @@ function App() {
                   addConnection={addConnection}
                   hotConnection={hotConnection}
                   setHotConnection={setHotConnection}
+                  hoveredMeshes={hoveredMeshes}
+                  setHoveredMeshes={setHoveredMeshes}
                   key={moduleObj.id}
                 ></Shape>
               );
@@ -169,6 +172,8 @@ function App() {
                     connectionObj={connectionObj}
                     removeConnection={removeConnection}
                     modules={modules}
+                    hoveredMeshes={hoveredMeshes}
+                    setHoveredMeshes={setHoveredMeshes}
                     key={connectionObj.id}
                   ></Line>
                 );

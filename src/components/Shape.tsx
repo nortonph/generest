@@ -12,6 +12,7 @@ import { Module, ModuleObj } from '../models/module';
 import { Connection } from '../models/connection';
 import ControlsInstrument from './ControlsInstrument';
 import ControlsDatasource from './ControlsDatasource';
+import { addToHoverQueue, removeFromHoverQueue, isOnTopOfHoverQueue } from '../helpers/hover';
 
 // A property object that is passed to the Shape component
 interface ShapeProps {
@@ -21,6 +22,8 @@ interface ShapeProps {
   addConnection: (newConnection: Connection) => void;
   hotConnection: ModuleObj | undefined; // containing module that has been selected for connection (if any)
   setHotConnection: React.Dispatch<React.SetStateAction<ModuleObj | undefined>>;
+  hoveredMeshes: Mesh[];
+  setHoveredMeshes: React.Dispatch<React.SetStateAction<Mesh[]>>;
   key: number;
 }
 
@@ -96,6 +99,9 @@ function Shape(props: ShapeProps) {
   }, [active]);
 
   const handlePointerOver = () => {
+    props.setHoveredMeshes((existingHoverQueue: Mesh[]) => {
+      return addToHoverQueue(existingHoverQueue, meshRef.current)
+    });
     // starts hovering
     api.start({
       color: 'thistle',
@@ -103,6 +109,9 @@ function Shape(props: ShapeProps) {
   };
 
   const handlePointerOut = () => {
+    props.setHoveredMeshes((existingHoverQueue: Mesh[]) => {
+      return removeFromHoverQueue(existingHoverQueue, meshRef.current)
+    });
     // stops hovering
     api.start({
       color: props.moduleObj.module.color,
@@ -163,7 +172,7 @@ function Shape(props: ShapeProps) {
   // JSX ###############################################
   return (
     <>
-      {/* This wrapping tag enables drag-and-drop by left click on the shape */}
+      {/* This wrapping tag enables drag-and-drop by left click on the shape. See @use-gesture by pnmdrs for config options*/}
       <DragControls
         onDragStart={() => {
           props.moduleObj.module.hasBeenDragged = true
@@ -173,6 +182,7 @@ function Shape(props: ShapeProps) {
           updatePosition();
         }}
         onDragEnd={() => {}}
+        dragConfig={{enabled: isOnTopOfHoverQueue(props.hoveredMeshes, meshRef.current)}}
       >
         {/* NOTE TO LEGACY TEAM: if animated.mesh (i.e. the cube) has a direct parent other than DragControls, worldPos might not be correctly calculated! */}
         <animated.mesh
