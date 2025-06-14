@@ -2,6 +2,7 @@
  */
 
 import './Controls.css';
+import { useState } from 'react';
 import { Html } from '@react-three/drei';
 import { Instrument, scales } from '../instrument';
 
@@ -10,39 +11,42 @@ interface ControlsInstrumentProps {
 }
 
 function ControlsInstrument(props: ControlsInstrumentProps) {
-  const handleSelectTempo = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(event.target.value);
-    props.instrument.setSequenceTempo(event.target.value);
-  };
+  const [tempo, setTempo] = useState('8n');
+  const [noteDur, setNoteDur] = useState('16n');
+  const [octave, setOctave] = useState(4);
+  const [octRange, setOctRange] = useState(2);
+
   const handleSelectScale = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     console.log(event.target.value);
     props.instrument.setScale(event.target.value as (keyof typeof scales));
   };
-  const handleSelectNoteDuration = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    console.log(event.target.value);
-    props.instrument.setNoteDuration(event.target.value);
+  const handleSelectTempo = (tempo: string) => {
+    console.log(tempo);
+    setTempo(tempo);
+    props.instrument.setSequenceTempo(tempo);
   };
-  const handleSelectSequenceLength = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    console.log(event.target.value);
-    props.instrument.setNNotesInSequence(Number(event.target.value));
+  const handleSelectNoteDuration = (noteDur: string) => {
+    console.log(noteDur);
+    setNoteDur(noteDur);
+    props.instrument.setNoteDuration(noteDur);
   };
-  const handleSelectOctave = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    console.log(event.target.value);
-    props.instrument.setOctave(Number(event.target.value));
+  // const handleSelectSequenceLength = (
+  //   event: React.ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   console.log(event.target.value);
+  //   props.instrument.setNNotesInSequence(Number(event.target.value));
+  // };
+  const handleSelectOctave = (octave: number) => {
+    console.log(octave);
+    setOctave(octave);
+    props.instrument.setOctave(octave);
   };
-  const handleSelectOctaveRange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    console.log(event.target.value);
-    props.instrument.setOctaveRange(Number(event.target.value));
+  const handleSelectOctaveRange = (octRange: number) => {
+    console.log(octRange);
+    setOctRange(octRange)
+    props.instrument.setOctaveRange(octRange);
   };
   const handleCheckboxDistortion = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -83,57 +87,36 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
   return (
     <Html className='controlsHtml'>
       <div className='controls'>
-        <label htmlFor='scale'>scale: </label>
-        <select
-          id='scale'
-          name='scale'
-          onChange={(event) => {
-            handleSelectScale(event);
-          }}
-        >
-          <option value='Dminor' selected>
-            Dminor
-          </option>
-          <option value='Dpenta'>Dpenta</option>
-          <option value='Fmajor'>Fmajor</option>
-        </select>
-        <br />
-        <label htmlFor='tempo'>tempo: </label>
-        <select
-          id='tempo'
-          name='tempo'
-          onChange={(event) => {
-            handleSelectTempo(event);
-          }}
-        >
-          <option value='2n'>2n</option>
-          <option value='4n'>4n</option>
-          <option value='8n' selected>
-            8n
-          </option>
-          <option value='16n'>16n</option>
-          <option value='32n'>32n</option>
-          <option value='64n'>64n</option>
-        </select>
-        <br />
-        <label htmlFor='note-duration'>note duration: </label>
-        <select
-          id='note-duration'
-          name='note-duration'
-          onChange={(event) => {
-            handleSelectNoteDuration(event);
-          }}
-        >
-          <option value='2n'>2n</option>
-          <option value='4n'>4n</option>
-          <option value='8n'>8n</option>
-          <option value='16n' selected>
-            16n
-          </option>
-          <option value='32n'>32n</option>
-          <option value='64n'>64n</option>
-        </select>
-        <br />
+        <div className='control'>
+          <label htmlFor='scale'>scale: </label>
+          <select
+            id='scale'
+            name='scale'
+            onChange={(event) => {
+              handleSelectScale(event);
+            }}
+          >
+            <option value='Dminor' selected>
+              Dminor
+            </option>
+            <option value='Dpenta'>Dpenta</option>
+            <option value='Fmajor'>Fmajor</option>
+          </select>
+        </div>
+        <div className='control'>
+          <label htmlFor='tempo'>tempo: </label>
+          <input type='range' name='tempo' id='tempo' min='1' max='6' 
+            value={Math.log(parseInt(tempo)) / Math.log(2)}
+            onChange={(event) => {handleSelectTempo(Math.pow(2, parseInt(event.target.value)) + 'n');}}/>
+          <span>{tempo}</span>      
+        </div>
+        <div className='control'>
+          <label htmlFor='note-duration'>note dur.: </label>
+          <input type='range' name='note-duration' id='note-duration' min='1' max='6' 
+            value={Math.log(parseInt(noteDur)) / Math.log(2)}
+            onChange={(event) => {handleSelectNoteDuration(Math.pow(2, parseInt(event.target.value)) + 'n');}}/>
+          <span>{noteDur}</span>      
+        </div>
         {/* <label htmlFor='sequence-length'>sequence-length: </label>
         <select
           id='sequence-length'
@@ -149,58 +132,41 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
           <option value='64'>64</option>
         </select>
         <br /> */}
-        <label htmlFor='octave'>octave: </label>
-        <select
-          id='octave'
-          name='octave'
-          onChange={(event) => {
-            handleSelectOctave(event);
-          }}
-        >
-          <option value='2'>2</option>
-          <option value='3'>3</option>
-          <option value='4' selected>
-            4
-          </option>
-          <option value='5'>5</option>
-          <option value='6'>6</option>
-          <option value='7'>7</option>
-        </select>
-        <br />
-        <label htmlFor='octave-range'>octave-range: </label>
-        <select
-          id='octave-range'
-          name='octave-range'
-          onChange={(event) => {
-            handleSelectOctaveRange(event);
-          }}
-        >
-          <option value='0'>0</option>
-          <option value='1'>1</option>
-          <option value='2' selected>2</option>
-          <option value='3'>3</option>
-          <option value='4'>4</option>
-        </select>
-        <br />
-        <label htmlFor='distortion'>distortion:</label>
-        <input
-          type='checkbox'
-          id='distortion'
-          name='distortion'
-          onChange={(event) => {
-            handleCheckboxDistortion(event);
-          }}
-        />
-        <input
-          type='range'
-          id='distLevel'
-          name='distLevel'
-          min='0'
-          max='400'
-          onChange={(event) => {
-            handleSliderDistortionLevel(event);
-          }}
-        />
+        <div className='control'>
+          <label htmlFor='octave'>octave: </label>
+          <input type='range' name='octave' id='octave' min='2' max='7' 
+            value={octave}
+            onChange={(event) => {handleSelectOctave(parseInt(event.target.value));}}/>
+          <span>{octave}</span>      
+        </div>
+        <div className='control'>
+          <label htmlFor='octave-range'>oct. range: </label>
+          <input type='range' name='octave-range' id='octave-range' min='0' max='4' 
+            value={octRange}
+            onChange={(event) => {handleSelectOctaveRange(parseInt(event.target.value));}}/>
+          <span>{octRange}</span>      
+        </div>
+        <div className='control'>
+          <label htmlFor='distortion'>distortion:</label>
+          <input
+            type='range'
+            id='distLevel'
+            name='distLevel'
+            min='0'
+            max='400'
+            onChange={(event) => {
+              handleSliderDistortionLevel(event);
+            }}
+          />
+          <input
+            type='checkbox'
+            id='distortion'
+            name='distortion'
+            onChange={(event) => {
+              handleCheckboxDistortion(event);
+            }}
+          />
+        </div>
         {/* <label htmlFor='reverb'>reverb:</label>
         <input
           type='checkbox'
@@ -220,8 +186,11 @@ function ControlsInstrument(props: ControlsInstrumentProps) {
             handleSliderReverbDecay(event);
           }}
         /> */}
-        <button onClick={handleClickPlay}>play</button>
-        <button onClick={handleClickStop}>stop</button>
+        <br />
+        <div className='controlButtons'>
+          <button onClick={handleClickPlay}>play</button>
+          <button onClick={handleClickStop}>stop</button>
+        </div>
       </div>
     </Html>
   );
