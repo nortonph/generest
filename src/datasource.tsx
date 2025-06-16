@@ -1,4 +1,7 @@
 /** Datasource represents an API, to be used as a Module. generates input for instrument */
+import { fetchData } from './helpers/fetch';
+import { DataService } from './services/dataService';
+
 export class Datasource {
   // two-part API url; a specific entity (e.g. sensor name) is added in between (setEntity())
   // final fetch call will be on (baseUrl + entity + pathEnd + [query parameters])
@@ -9,19 +12,13 @@ export class Datasource {
   numberArray: number[]; // holds the extracted numerical data to be used for instrument sequence generation
 
   constructor(
-    url?: { baseUrl: string; pathEnd: string },
     entity?: string,
     dataVariable?: string
   ) {
-    if (url && (url.baseUrl.length > 0 || url.pathEnd.length > 0)) {
-      this.url = url;
-    } else {
-      // use default API url (Newcastle Urban Observatory) if optional url was not passed
-      this.url = {
-        baseUrl: 'http://localhost:3000/api/nuo/api/v1.1/sensors/',
-        pathEnd: '/data/json/',
-      };
-    }
+    this.url = {
+      baseUrl: DataService.baseUrl,
+      pathEnd: DataService.dataPathEnd,
+    };
     this.entity = entity
       ? entity
       : 'PER_PEOPLE_NCLPILGRIMSTMARKETLN_FROM_SOUTH_TO_NORTH';
@@ -63,24 +60,9 @@ export class Datasource {
     }
 
     // fetch data
-    try {
-      console.log('trying to fetch with query url: ' + queryUrl);
-      const response = await fetch(queryUrl, {
-        mode: 'cors',
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      const json = await response.json();
-      console.log('Hurray: fetched data from ' + queryUrl);
-      console.log(json);
-      this.rawDataFromApi = json;
-    } catch (error) {
-      console.log('ERROR: problem fetching data from API: ', error);
+    const fetchedData = await fetchData(queryUrl);
+    if (fetchedData) {
+      this.rawDataFromApi = fetchedData;
     }
 
     // extract numbers from raw data
