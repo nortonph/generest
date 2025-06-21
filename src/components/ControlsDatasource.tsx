@@ -4,6 +4,8 @@
 import './Controls.css';
 import { Html } from '@react-three/drei';
 import { Datasource } from '../datasource';
+import { DataService } from '../services/dataService';
+import { useEffect, useState } from 'react';
 
 interface ControlsDatasourceProps {
   datasource: Datasource;
@@ -11,10 +13,29 @@ interface ControlsDatasourceProps {
 }
 
 function ControlsDatasource(props: ControlsDatasourceProps) {
+  const [dataVariables, setDataVariables] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const dataVar = await DataService.getDataVariables();
+        setDataVariables(dataVar);
+      } catch (error) {
+        console.log('ERROR fetching data for ControlsDatasource!');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSelectType = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
     props.datasource.setDataVariable(event.target.value);
+  };
+
+  const handleSelectSensor = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(event.target.value);
+    props.datasource.setEntity(event.target.value);
   };
 
   return (
@@ -30,6 +51,23 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
               handleSelectType(event);
             }}
           >
+            {dataVariables.length
+              ? dataVariables.map((dataVar) => {
+                  return <option value={dataVar}>{dataVar}</option>;
+                })
+              : null}
+          </select>
+        </div>
+        <div className='control'>
+          <label htmlFor='sensor'>sensor: </label>
+          <select
+            id='sensor'
+            name='sensor'
+            onChange={(event) => {
+              handleSelectSensor(event);
+            }}
+          >
+
           </select>
         </div>
         <button onClick={props.handleClose} className='buttonClose'>

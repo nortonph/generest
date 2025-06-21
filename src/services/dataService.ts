@@ -15,8 +15,12 @@ export class DataService {
 
         const dataVariablesUrl = DataService.baseUrl + 'types/json/';
         const fetchedData = await fetchData(dataVariablesUrl);
-        DataService.cache.set('dataVariables', fetchData);
-        return fetchedData;
+        // todo: data model for this and others
+        const dataVariableNames = fetchedData.array.forEach((element: any) => {
+            return element['Name'];
+        });
+        DataService.cache.set('dataVariables', dataVariableNames);
+        return dataVariableNames;
     }
 
     static async getSensors(dataVariable: string) {
@@ -24,9 +28,13 @@ export class DataService {
             return DataService.cache.get('sensors' + dataVariable);
         }
 
-        const sensorsUrl = DataService.baseUrl + 'json/';
+        const sensorsUrl = DataService.baseUrl + 'json/?sensor_type=' + dataVariable;
         const fetchedData = await fetchData(sensorsUrl);
-        DataService.cache.set('sensors' + dataVariable, fetchData);
-        return fetchedData;
+        // todo: data model for this and others
+        const sensorNames = fetchedData.array.forEach((element: any) => {
+            return element['Sensor Name'];
+        });
+        DataService.cache.set('sensors' + dataVariable, sensorNames);
+        return sensorNames;
     }
 }

@@ -29,6 +29,13 @@ export class Datasource {
   /** Set the middle part of the query url (sensor name in Newcastle Urban Observatory) */
   setEntity(entity: string) {
     this.entity = entity;
+    // todo: test this:
+    this.extractNumberArrayFromRawData();
+  }
+  setDataVariable(dataVariable: string) {
+    this.dataVariable = dataVariable;
+    // todo: test this:
+    this.extractNumberArrayFromRawData();
   }
 
   /** Get a full day of sensor (entity) data from the Newcastle Urban Observatory */
@@ -93,9 +100,4 @@ export class Datasource {
     );
   }
 
-  setDataVariable(dataVariable: string) {
-    this.dataVariable = dataVariable;
-    // todo: test this:
-    this.extractNumberArrayFromRawData();
-  }
 }
