@@ -92,4 +92,10 @@ export class Datasource {
       date.getDate().toString().padStart(2, '0')
     );
   }
+
+  setDataVariable(dataVariable: string) {
+    this.dataVariable = dataVariable;
+    // todo: test this:
+    this.extractNumberArrayFromRawData();
+  }
 }
