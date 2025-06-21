@@ -21,7 +21,7 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
         const dataVar = await DataService.getDataVariables();
         setDataVariables(dataVar);
       } catch (error) {
-        console.log('ERROR fetching data for ControlsDatasource!');
+        console.log('ERROR fetching data for ControlsDatasource! ' + error);
       }
     };
 

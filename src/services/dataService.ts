@@ -16,9 +16,14 @@ export class DataService {
         const dataVariablesUrl = DataService.baseUrl + 'types/json/';
         const fetchedData = await fetchData(dataVariablesUrl);
         // todo: data model for this and others
-        const dataVariableNames = fetchedData.array.forEach((element: any) => {
+        console.log('fetchedData: ')
+        console.log(fetchedData)
+        console.log(typeof fetchedData['Variables'])
+        const dataVariableNames = fetchedData['Variables'].forEach((element: any) => {
             return element['Name'];
         });
+        console.log('dataVariableNames: ')
+        console.log(dataVariableNames)
         DataService.cache.set('dataVariables', dataVariableNames);
         return dataVariableNames;
     }
