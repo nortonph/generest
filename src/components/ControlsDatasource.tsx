@@ -14,6 +14,7 @@ interface ControlsDatasourceProps {
 
 function ControlsDatasource(props: ControlsDatasourceProps) {
   const [dataVariables, setDataVariables] = useState([]);
+  const [sensorNames, setSensorNames] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,14 +24,23 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
       } catch (error) {
         console.log('ERROR fetching data for ControlsDatasource! ' + error);
       }
+      try {
+        const sensors = await DataService.getSensors(
+          props.datasource.dataVariable
+        );
+        setSensorNames(sensors);
+      } catch (error) {
+        console.log('ERROR fetching data for ControlsDatasource! ' + error);
+      }
     };
-
+    // todo: set selected <input> option to the one in datasource.dataVariable (or set default here)
     fetchData();
   }, []);
 
   const handleSelectType = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
     props.datasource.setDataVariable(event.target.value);
+    // todo: update sensorNames here ->[3
   };
 
   const handleSelectSensor = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -67,7 +77,11 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
               handleSelectSensor(event);
             }}
           >
-
+            {sensorNames.length
+              ? sensorNames.map((sensors) => {
+                  return <option value={sensors}>{sensors}</option>;
+                })
+              : null}
           </select>
         </div>
         <button onClick={props.handleClose} className='buttonClose'>
