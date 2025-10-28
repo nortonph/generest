@@ -13,14 +13,16 @@ interface ControlsDatasourceProps {
 }
 
 function ControlsDatasource(props: ControlsDatasourceProps) {
-  const [dataVariables, setDataVariables] = useState([]);
-  const [sensorNames, setSensorNames] = useState([]);
+  const [sensorTypes, setSensorTypes] = useState<string[]>([]);
+  const [sensorNames, setSensorNames] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState('<select sensor type>');
+  const [selectedSensor, setSelectedSensor] = useState('<select sensor>');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const dataVar = await DataService.getDataVariables();
-        setDataVariables(dataVar);
+        setSensorTypes(dataVar);
       } catch (error) {
         console.log('ERROR fetching data for ControlsDatasource! ' + error);
       }
@@ -34,18 +36,29 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
       }
     };
     // todo: set selected <input> option to the one in datasource.dataVariable (or set default here)
-    fetchData();
+    fetchData().then(() => {
+      console.log(sensorTypes)
+      if (sensorTypes.includes('Walking')) {
+        setSelectedType('Walking');
+      } else {
+        console.log(
+          'Warning: default <Walking> not found in fetched sensor types'
+        );
+      }
+    });
   }, []);
 
   const handleSelectType = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
     props.datasource.setDataVariable(event.target.value);
+    setSelectedSensor(event.target.value);
     // todo: update sensorNames here ->[3
   };
 
   const handleSelectSensor = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
     props.datasource.setEntity(event.target.value);
+    setSelectedSensor(event.target.value);
   };
 
   return (
@@ -57,12 +70,13 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
           <select
             id='type'
             name='type'
+            value={selectedType}
             onChange={(event) => {
               handleSelectType(event);
             }}
           >
-            {dataVariables.length
-              ? dataVariables.map((dataVar) => {
+            {sensorTypes.length
+              ? sensorTypes.map((dataVar) => {
                   return <option value={dataVar}>{dataVar}</option>;
                 })
               : null}
@@ -73,6 +87,7 @@ function ControlsDatasource(props: ControlsDatasourceProps) {
           <select
             id='sensor'
             name='sensor'
+            value={selectedSensor}
             onChange={(event) => {
               handleSelectSensor(event);
             }}

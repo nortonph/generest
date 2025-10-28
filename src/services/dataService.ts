@@ -8,6 +8,9 @@ export class DataService {
   static baseUrl = 'http://localhost:3000/api/nuo/api/v1.1/sensors/';
   static dataPathEnd = '/data/json/';
 
+  // todo refactor: rename dataVariable to Type everywhere
+  // todo: message if server connection failed
+  // todo: these should be called once at the beginning of app (right now only in datasourceControls)
   static async getDataVariables() {
     if (DataService.cache.has('dataVariables')) {
       return DataService.cache.get('dataVariables');

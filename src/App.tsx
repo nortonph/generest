@@ -1,7 +1,6 @@
 /** generest
  * generative music playground using public APIs as input
  *
- * Solo project for codeworks
  * Philipp Norton, 2025
  */
 
